@@ -57,6 +57,7 @@ namespace Valve.VR.InteractionSystem
 		public AudioClip pointerStopSound;
 		public AudioClip goodHighlightSound;
 		public AudioClip badHighlightSound;
+		public bool showTeleportHint = false;
 
 		[Header( "Debug" )]
 		public bool debugFloor = false;
@@ -188,8 +189,11 @@ namespace Valve.VR.InteractionSystem
 
 			CheckForSpawnPoint();
 
-			Invoke( "ShowTeleportHint", 5.0f );
-		}
+			if (showTeleportHint)
+			{
+				Invoke( "ShowTeleportHint", 5.0f );
+			}
+        }
 
 
 		//-------------------------------------------------
