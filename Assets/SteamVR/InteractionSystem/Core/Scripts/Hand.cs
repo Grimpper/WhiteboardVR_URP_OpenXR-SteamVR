@@ -107,6 +107,10 @@ namespace Valve.VR.InteractionSystem
             public Quaternion easeSourceRotation;
             public float attachTime;
             public AllowTeleportWhileAttachedToHand allowTeleportWhileAttachedToHand;
+            
+            // Layer setter
+            public int originalLayer;
+            // Layer setter
 
             public bool HasAttachFlag(AttachmentFlags flag)
             {
@@ -433,6 +437,10 @@ namespace Valve.VR.InteractionSystem
             }
 
             attachedObject.originalParent = objectToAttach.transform.parent != null ? objectToAttach.transform.parent.gameObject : null;
+            
+            // Layer Setter
+            attachedObject.originalLayer = objectToAttach.layer;
+            // Layer Setter
 
             attachedObject.attachedRigidbody = objectToAttach.GetComponent<Rigidbody>();
             if (attachedObject.attachedRigidbody != null)
@@ -465,6 +473,9 @@ namespace Valve.VR.InteractionSystem
             {
                 //Parent the object to the hand
                 objectToAttach.transform.parent = this.transform;
+                // Set object to attach layer to hand layer
+                objectToAttach.layer = this.gameObject.layer;
+                
                 attachedObject.isParentedToHand = true;
             }
             else
@@ -626,16 +637,22 @@ namespace Valve.VR.InteractionSystem
                 }
 
                 Transform parentTransform = null;
+                // Layer to restore
+                int parentLayer = 0;
                 if (attachedObjects[index].isParentedToHand)
                 {
                     if (restoreOriginalParent && (attachedObjects[index].originalParent != null))
                     {
                         parentTransform = attachedObjects[index].originalParent.transform;
+                        // Restore Layer
+                        parentLayer = attachedObjects[index].originalLayer;
                     }
 
                     if (attachedObjects[index].attachedObject != null)
                     {
                         attachedObjects[index].attachedObject.transform.parent = parentTransform;
+                        // Restore Layer
+                        attachedObjects[index].attachedObject.layer = parentLayer;
                     }
                 }
 

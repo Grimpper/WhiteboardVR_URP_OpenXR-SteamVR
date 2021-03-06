@@ -8,12 +8,23 @@ using UnityEngine;
 public class LayerSetter : MonoBehaviour
 {
     [SerializeField] private LayerMask setLayerTo;
+    [SerializeField] private bool updateDynamically = true;
+
+    private int layer;
 
     void Start()
-    { 
-        int layer = (int) Math.Log(setLayerTo.value, 2);
+    {
+        layer = (int) Math.Log(setLayerTo.value, 2);
         Debug.Log("Selected Layer: " + layer);
         SetLayerRecursively(gameObject, layer);
+    }
+
+    private void Update()
+    {
+        if (updateDynamically)
+        {
+            SetLayerRecursively(gameObject, layer);
+        }
     }
 
     void SetLayerRecursively(GameObject obj, int desiredLayer) 

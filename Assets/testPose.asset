@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e90911e410742a1498a167540c7865bf, type: 3}
-  m_Name: YoPenPose
+  m_Name: testPose
   m_EditorClassIdentifier: 
   leftHand:
     inputSource: 1
-    thumbFingerMovementType: 0
+    thumbFingerMovementType: 1
     indexFingerMovementType: 0
     middleFingerMovementType: 0
-    ringFingerMovementType: 0
-    pinkyFingerMovementType: 0
+    ringFingerMovementType: 1
+    pinkyFingerMovementType: 1
     ignoreRootPoseData: 1
     ignoreWristPoseData: 1
-    position: {x: -0.08206586, y: 0.05180225, z: -0.08862776}
-    rotation: {x: 0.94789803, y: 0.2518897, z: 0.013701906, w: 0.19455892}
+    position: {x: 0.015645161, y: -0.052269578, z: -0.039159026}
+    rotation: {x: 0.98613095, y: -0.065971784, z: 0.010165714, w: 0.15195486}
     bonePositions:
     - {x: -0, y: 0, z: 0}
     - {x: -0.034037687, y: 0.03650266, z: 0.16472164}
