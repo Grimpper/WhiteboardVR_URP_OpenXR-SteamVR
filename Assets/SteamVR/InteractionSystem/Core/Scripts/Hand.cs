@@ -438,9 +438,9 @@ namespace Valve.VR.InteractionSystem
 
             attachedObject.originalParent = objectToAttach.transform.parent != null ? objectToAttach.transform.parent.gameObject : null;
             
-            // Layer Setter
+            // Custom code: Layer Setter
             attachedObject.originalLayer = objectToAttach.layer;
-            // Layer Setter
+            // Custom code: Restore Setter
 
             attachedObject.attachedRigidbody = objectToAttach.GetComponent<Rigidbody>();
             if (attachedObject.attachedRigidbody != null)
@@ -637,22 +637,23 @@ namespace Valve.VR.InteractionSystem
                 }
 
                 Transform parentTransform = null;
-                // Layer to restore
+                // Custom code: Layer to restore
                 int parentLayer = 0;
                 if (attachedObjects[index].isParentedToHand)
                 {
                     if (restoreOriginalParent && (attachedObjects[index].originalParent != null))
                     {
                         parentTransform = attachedObjects[index].originalParent.transform;
-                        // Restore Layer
+                        // Custom code: Restore Layer
                         parentLayer = attachedObjects[index].originalLayer;
                     }
 
                     if (attachedObjects[index].attachedObject != null)
                     {
                         attachedObjects[index].attachedObject.transform.parent = parentTransform;
-                        // Restore Layer
+                        // Custom code: Restore Layer
                         attachedObjects[index].attachedObject.layer = parentLayer;
+                        // Custom code: Restore Layer
                     }
                 }
 

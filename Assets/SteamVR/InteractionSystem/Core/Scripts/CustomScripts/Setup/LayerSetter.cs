@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.Collections;
 using UnityEngine;
+using Valve.VR.InteractionSystem;
 
 public class LayerSetter : MonoBehaviour
 {
@@ -27,11 +28,11 @@ public class LayerSetter : MonoBehaviour
         }
     }
 
-    void SetLayerRecursively(GameObject obj, int desiredLayer) 
+    public static void SetLayerRecursively(GameObject obj, int desiredLayer) 
     {
         obj.layer = desiredLayer;
 
-        foreach(Transform child in obj.transform )
+        foreach(Transform child in obj.transform)
         {
             SetLayerRecursively(child.gameObject, desiredLayer);
         }

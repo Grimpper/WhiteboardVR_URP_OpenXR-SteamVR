@@ -40,9 +40,9 @@ namespace Valve.VR.InteractionSystem
             
             handCollider = ((GameObject)Instantiate(handColliderPrefab.gameObject)).GetComponent<HandCollider>();
             
-            // Fix hand movement //
+            // Custom code: Fix hand movement //
             handCollider.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
-            // Fix hand movement //
+            // Custom code: Fix hand movement //
             
             Vector3 localPosition = handCollider.transform.localPosition;
             Quaternion localRotation = handCollider.transform.localRotation;
