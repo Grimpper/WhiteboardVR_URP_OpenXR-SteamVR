@@ -652,7 +652,7 @@ namespace Valve.VR.InteractionSystem
                     {
                         attachedObjects[index].attachedObject.transform.parent = parentTransform;
                         // Custom code: Restore Layer
-                        attachedObjects[index].attachedObject.layer = parentLayer;
+                        LayerSetter.SetLayerRecursively(attachedObjects[index].attachedObject, parentLayer);
                         // Custom code: Restore Layer
                     }
                 }
