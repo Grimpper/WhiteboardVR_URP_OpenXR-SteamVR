@@ -9,28 +9,36 @@ using Valve.VR.InteractionSystem;
 
 public class LayerSetter : MonoBehaviour
 {
+    [Space(10)]
+    
     [Tooltip("Set parent and children to this layer")]
-    [SerializeField] private LayerMask setBaseLayerTo;
+    public LayerMask setBaseLayerTo;
+    
+    [Space(10)]
 
-    [Header("Exception layer")] 
-    private new static string tag = "Hand";
+    [Tooltip("GameObjects with this tag will be set to alt layer")]
+    [TagSelectorAtributte] public string alternativeTag;
     [Tooltip("Set parent and children with selected tag to this layer")]
-    [SerializeField] private LayerMask setAlternativeLayerTo;
+    public LayerMask setAlternativeLayerTo;
     
     [Space(10)]
     [Tooltip("Update layers every frame")]
-    [SerializeField] private bool updateDynamically = true;
+    public bool updateDynamically = true;
 
     private int baseLayer;
     private int altLayer;
+    private static string _altLayerTag;
 
     void Start()
     {
         baseLayer = (int) Math.Log(setBaseLayerTo.value, 2);
         altLayer = (int) Math.Log(setAlternativeLayerTo.value, 2);
+
+        _altLayerTag = alternativeTag;
         
         Debug.Log("Selected Base Layer: " + baseLayer);
         Debug.Log("Selected Hand Layer: " + altLayer);
+        Debug.Log("Selected Tag: " + _altLayerTag);
 
         SetLayerRecursively(gameObject, baseLayer, altLayer);
     }
@@ -45,7 +53,7 @@ public class LayerSetter : MonoBehaviour
 
     public static void SetLayerRecursively(GameObject obj, int desiredBaseLayer, int desiredHandLayer = -1)
     {
-        if (obj.CompareTag(tag) && (desiredHandLayer >= 0 && desiredHandLayer <= 31))
+        if (_altLayerTag != "" && obj.CompareTag(_altLayerTag) && (desiredHandLayer >= 0 && desiredHandLayer <= 31))
         {
             obj.layer = desiredHandLayer;
             

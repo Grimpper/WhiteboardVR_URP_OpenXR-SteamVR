@@ -2103,12 +2103,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
+      propertyPath: alternativeTag
+      value: Hand
+      objectReference: {fileID: 0}
+    - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
       propertyPath: setLayerTo.m_Bits
       value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
       propertyPath: updateDynamically
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
+      propertyPath: alternativeLayertag
+      value: Hand
       objectReference: {fileID: 0}
     - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
       propertyPath: setBaseLayerTo.m_Bits
