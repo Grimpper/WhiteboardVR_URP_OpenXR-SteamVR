@@ -12,14 +12,14 @@ public class LayerSetter : MonoBehaviour
     [Space(10)]
     
     [Tooltip("Set parent and children to this layer")]
-    public LayerMask setBaseLayerTo;
+    [LayerSelectorAtributte] public string setBaseLayerTo;
     
     [Space(10)]
 
     [Tooltip("GameObjects with this tag will be set to alt layer")]
     [TagSelectorAtributte] public string alternativeTag;
     [Tooltip("Set parent and children with selected tag to this layer")]
-    public LayerMask setAlternativeLayerTo;
+    [LayerSelectorAtributte] public string setAlternativeLayerTo;
     
     [Space(10)]
     [Tooltip("Update layers every frame")]
@@ -31,13 +31,13 @@ public class LayerSetter : MonoBehaviour
 
     void Start()
     {
-        baseLayer = (int) Math.Log(setBaseLayerTo.value, 2);
-        altLayer = (int) Math.Log(setAlternativeLayerTo.value, 2);
+        baseLayer = LayerMask.NameToLayer(setBaseLayerTo);
+        altLayer =  LayerMask.NameToLayer(setAlternativeLayerTo);
 
         _altLayerTag = alternativeTag;
         
-        Debug.Log("Selected Base Layer: " + baseLayer);
-        Debug.Log("Selected Hand Layer: " + altLayer);
+        Debug.Log("Selected Base Layer: " + setBaseLayerTo + " (" + baseLayer + ")");
+        Debug.Log("Selected Hand Layer: " + setAlternativeLayerTo + " (" + altLayer + ")");
         Debug.Log("Selected Tag: " + _altLayerTag);
 
         SetLayerRecursively(gameObject, baseLayer, altLayer);
@@ -45,10 +45,14 @@ public class LayerSetter : MonoBehaviour
 
     private void Update()
     {
-        if (updateDynamically)
-        {
-            SetLayerRecursively(gameObject, baseLayer, altLayer);
-        }
+        if (!updateDynamically) return;
+        
+        baseLayer = LayerMask.NameToLayer(setBaseLayerTo);
+        altLayer =  LayerMask.NameToLayer(setAlternativeLayerTo);
+
+        _altLayerTag = alternativeTag;
+            
+        SetLayerRecursively(gameObject, baseLayer, altLayer);
     }
 
     public static void SetLayerRecursively(GameObject obj, int desiredBaseLayer, int desiredHandLayer = -1)

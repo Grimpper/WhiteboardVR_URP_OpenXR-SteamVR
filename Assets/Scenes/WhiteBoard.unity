@@ -2107,28 +2107,16 @@ PrefabInstance:
       value: Hand
       objectReference: {fileID: 0}
     - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
-      propertyPath: setLayerTo.m_Bits
-      value: 64
+      propertyPath: setBaseLayerTo
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
       propertyPath: updateDynamically
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
-      propertyPath: alternativeLayertag
+      propertyPath: setAlternativeLayerTo
       value: Hand
-      objectReference: {fileID: 0}
-    - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
-      propertyPath: setBaseLayerTo.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
-      propertyPath: setHandLayerTo.m_Bits
-      value: 128
-      objectReference: {fileID: 0}
-    - target: {fileID: 5432544610620792741, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
-      propertyPath: setAlternativeLayerTo.m_Bits
-      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 5432544610620792743, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
       propertyPath: m_Name
