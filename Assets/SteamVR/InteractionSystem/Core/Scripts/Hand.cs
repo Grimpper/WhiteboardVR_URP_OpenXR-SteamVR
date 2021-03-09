@@ -108,9 +108,9 @@ namespace Valve.VR.InteractionSystem
             public float attachTime;
             public AllowTeleportWhileAttachedToHand allowTeleportWhileAttachedToHand;
             
-            // Layer setter
+            // Custom Code: Layer setter //
             public int originalLayer;
-            // Layer setter
+            // Custom Code: Layer setter //
 
             public bool HasAttachFlag(AttachmentFlags flag)
             {
@@ -473,8 +473,9 @@ namespace Valve.VR.InteractionSystem
             {
                 //Parent the object to the hand
                 objectToAttach.transform.parent = this.transform;
-                // Set object to attach layer to hand layer
+                // Custom code: Set object to attach layer to hand layer //
                 objectToAttach.layer = this.gameObject.layer;
+                // Custom code: Set object to attach layer to hand layer //
                 
                 attachedObject.isParentedToHand = true;
             }

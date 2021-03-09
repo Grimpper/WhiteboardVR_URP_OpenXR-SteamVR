@@ -19,6 +19,11 @@ namespace Valve.VR.InteractionSystem
 
         [Tooltip("Layers to consider when checking if an area is clear")]
         public LayerMask clearanceCheckMask;
+        
+        // Custom Code: Enable hand physics while grabbing //
+        [Tooltip("Enable hand physics while grabbing")]
+        [SerializeField] private bool enablePhysicsWhileGrabbing = false;
+        // Custom Code: Enable hand physics while grabbing //
 
         [HideInInspector]
         public Hand hand;
@@ -38,7 +43,12 @@ namespace Valve.VR.InteractionSystem
             hand = GetComponent<Hand>();
             //spawn hand collider and link it to us
             
-            handCollider = ((GameObject)Instantiate(handColliderPrefab.gameObject)).GetComponent<HandCollider>();
+            // Custom code: set handColliderGameObject's tag
+            GameObject handColliderObj = Instantiate(handColliderPrefab.gameObject);
+            handColliderObj.tag = "Hand";
+            // Custom code: set handColliderGameObject's tag
+            
+            handCollider = handColliderObj.GetComponent<HandCollider>();
             
             // Custom code: Fix hand movement //
             handCollider.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
@@ -115,7 +125,7 @@ namespace Valve.VR.InteractionSystem
                 }
             }
 
-            handCollider.SetCollisionDetectionEnabled(collisionsEnabled);
+            handCollider.SetCollisionDetectionEnabled(enablePhysicsWhileGrabbing || collisionsEnabled);
 
             if (hand.skeleton == null) return;
             initialized = true;
