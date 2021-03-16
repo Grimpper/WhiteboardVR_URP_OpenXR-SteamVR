@@ -9,6 +9,7 @@ TagManager:
   - Ground
   - whiteboard
   - Hand
+  - Marker
   layers:
   - Default
   - TransparentFX
