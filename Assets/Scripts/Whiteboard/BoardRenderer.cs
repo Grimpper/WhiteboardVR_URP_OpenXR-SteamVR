@@ -14,7 +14,7 @@ public class BoardRenderer : MonoBehaviour
     private MeshRenderer renderComponent;
     private Color[] colorArray;
     
-    private bool strokeCleared = false;
+    private bool strokeCleared = true;
 
     public bool StrokeCleared
     {
