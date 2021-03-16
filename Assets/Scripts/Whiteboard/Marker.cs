@@ -6,5 +6,6 @@ public class Marker : MonoBehaviour
 {
     [SerializeField]
     private Color color;
-    public Color Color { get; }
+
+    public Color Color => color;
 }
