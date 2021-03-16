@@ -17,6 +17,7 @@ public class BoardPointCollector : MonoBehaviour
     private Collision markerCollision = new Collision();
 
     public RaycastHit raycastHit;
+    [SerializeField] private float raycastOffset = 0.1f;
 
     private void Start()
     {
@@ -74,7 +75,7 @@ public class BoardPointCollector : MonoBehaviour
         
         collisionAverageNormal /= collision.contactCount;
 
-        return collisionAverageNormal;
+        return collisionAverageNormal.normalized;
     }
  
      private IEnumerator SamplePointsRoutine()
@@ -83,22 +84,25 @@ public class BoardPointCollector : MonoBehaviour
          {
              Vector3 collisionAverage = GetAverageCollisionPoint(markerCollision);
              Vector3 collisionAverageNormal = GetAverageCollisionNormals(markerCollision);
+             Vector3 raycastOrigin = collisionAverage - collisionAverageNormal * raycastOffset;
 
              int layerMask = gameObject.layer;
-             float rayLength = 100;
-             Ray ray = new Ray(collisionAverage, collisionAverageNormal);
+             float rayLength = 10000;
+             Ray ray = new Ray(raycastOrigin, collisionAverageNormal);
 
              if (Physics.Raycast(ray, out raycastHit, rayLength, ~layerMask))
              {
-                 boardRenderer.CollisionHit = raycastHit;
                  boardRenderer.SetColor(markerCollision.gameObject.GetComponent<Marker>().Color);
-             }
-
-             if (showDebug)
-             {
-                 Debug.DrawRay(ray.origin,ray.direction, Color.green, duration: 10000, false);
-                 Debug.Log("RAYCAST POINT: " + raycastHit.point);
-                 Debug.Log("RAYCAST TEXCOORD: " + raycastHit.textureCoord);
+                 boardRenderer.CollisionHit = raycastHit;
+                 
+                 if (showDebug)
+                 {
+                     Debug.Log("MARKER COLOR: " + markerCollision.gameObject.GetComponent<Marker>().Color);
+                     Debug.DrawRay(ray.origin,ray.direction, Color.green, duration: 10000, false);
+                     Debug.Log("RAYCAST POINT: " + raycastHit.point);
+                     Debug.Log("RAYCAST TEXCOORD: " + raycastHit.textureCoord);
+                 }
+                 
              }
 
              yield return new WaitForSeconds(sampleRate);

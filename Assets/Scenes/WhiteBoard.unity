@@ -1294,7 +1294,7 @@ GameObject:
   - component: {fileID: 1106697572}
   - component: {fileID: 1106697571}
   - component: {fileID: 1106697576}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BoardB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1315,7 +1315,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   markerTag: Marker
   sampleRate: 0.01
-  showDebug: 0
+  showDebug: 1
+  raycastOffset: 0
 --- !u!64 &1106697572
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1328,7 +1329,7 @@ MeshCollider:
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 0
-  m_CookingOptions: 30
+  m_CookingOptions: 0
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &1106697573
 MeshRenderer:
