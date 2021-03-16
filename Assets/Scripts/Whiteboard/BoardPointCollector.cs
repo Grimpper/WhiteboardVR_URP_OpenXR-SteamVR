@@ -11,17 +11,21 @@ public class BoardPointCollector : MonoBehaviour
     [SerializeField] [TagSelectorAtributte] private string markerTag;
     [SerializeField] private float sampleRate = 1f;
     [SerializeField] private bool showDebug = false;
-
+    
+    // Raycast variables
+    public RaycastHit raycastHit;
+    private float raycastOffset = 0.1f;
+    private int layerMask;
+    
+    // Intern variables
     private IEnumerator samplePoints;
     private BoardRenderer boardRenderer;
     private Collision markerCollision = new Collision();
 
-    public RaycastHit raycastHit;
-    [SerializeField] private float raycastOffset = 0.1f;
-
     private void Start()
     {
         boardRenderer = GetComponent<BoardRenderer>();
+        layerMask = (int)Mathf.Pow(2f, gameObject.layer);
     }
 
     private void OnCollisionEnter(Collision other)
@@ -86,11 +90,9 @@ public class BoardPointCollector : MonoBehaviour
              Vector3 collisionAverageNormal = GetAverageCollisionNormals(markerCollision);
              Vector3 raycastOrigin = collisionAverage - collisionAverageNormal * raycastOffset;
 
-             int layerMask = gameObject.layer;
-             float rayLength = 10000;
+             float rayLength = Mathf.Infinity;
              Ray ray = new Ray(raycastOrigin, collisionAverageNormal);
-
-             if (Physics.Raycast(ray, out raycastHit, rayLength, ~layerMask))
+             if (Physics.Raycast(ray, out raycastHit, rayLength, layerMask))
              {
                  boardRenderer.SetColor(markerCollision.gameObject.GetComponent<Marker>().Color);
                  boardRenderer.CollisionHit = raycastHit;
@@ -98,7 +100,9 @@ public class BoardPointCollector : MonoBehaviour
                  if (showDebug)
                  {
                      Debug.Log("MARKER COLOR: " + markerCollision.gameObject.GetComponent<Marker>().Color);
+                     
                      Debug.DrawRay(ray.origin,ray.direction, Color.green, duration: 10000, false);
+                     Debug.Log("RAYCAST LAYER MASK: " + layerMask);
                      Debug.Log("RAYCAST POINT: " + raycastHit.point);
                      Debug.Log("RAYCAST TEXCOORD: " + raycastHit.textureCoord);
                  }

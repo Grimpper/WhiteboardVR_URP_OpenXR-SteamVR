@@ -1315,8 +1315,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   markerTag: Marker
   sampleRate: 0.01
-  showDebug: 1
-  raycastOffset: 0
+  showDebug: 0
 --- !u!64 &1106697572
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1408,6 +1407,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textureSize: 2048
   penSize: 10
+  showDebug: 0
 --- !u!1 &1182955756
 GameObject:
   m_ObjectHideFlags: 0

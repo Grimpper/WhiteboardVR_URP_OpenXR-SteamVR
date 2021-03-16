@@ -8,6 +8,7 @@ public class BoardRenderer : MonoBehaviour
 {
     [SerializeField] private int textureSize = 2048;
     [SerializeField] private int penSize = 10;
+    [SerializeField] private bool showDebug = false;
 
     private Texture2D texture;
     private MeshRenderer renderComponent;
@@ -49,7 +50,7 @@ public class BoardRenderer : MonoBehaviour
         if (renderComponent == null || renderComponent.sharedMaterial == null || renderComponent.sharedMaterial.mainTexture == null)  return;
         
         Vector2 pixelUV = collisionHit.textureCoord;
-        Debug.Log("pixelUV TEXCOORD: " + pixelUV);
+        if(showDebug) Debug.Log("pixelUV TEXCOORD: " + pixelUV);
 
         pixelUV.x *= texture.width;
         pixelUV.y *= texture.height;
