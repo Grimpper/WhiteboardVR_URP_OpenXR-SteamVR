@@ -46,6 +46,7 @@ public class BoardPointCollector : MonoBehaviour
          if (!other.gameObject.CompareTag(markerTag)) return;
          
          StopCoroutine(samplePoints);
+         boardRenderer.StrokeCleared = true;
      }
 
     private Vector3 GetAverageCollisionPoint(Collision collision)

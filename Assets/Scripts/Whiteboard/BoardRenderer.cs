@@ -12,6 +12,13 @@ public class BoardRenderer : MonoBehaviour
     private Texture2D texture;
     private MeshRenderer renderComponent;
     private Color[] colorArray;
+    
+    private bool strokeCleared = false;
+
+    public bool StrokeCleared
+    {
+        set => strokeCleared = value;
+    }
 
     private RaycastHit collisionHit;
     public RaycastHit CollisionHit
@@ -22,6 +29,8 @@ public class BoardRenderer : MonoBehaviour
             RenderCollisionHit();
         }
     }
+
+    private Vector2 lastPixelUV;
 
     void Start()
     {
@@ -44,9 +53,24 @@ public class BoardRenderer : MonoBehaviour
 
         pixelUV.x *= texture.width;
         pixelUV.y *= texture.height;
-        
-        texture.SetPixels((int)pixelUV.x, (int)pixelUV.y, penSize, penSize, colorArray);
+
+        if (!strokeCleared)
+        {
+            for (float t = 0f; t < 1f; t += 0.01f)
+            {
+                int lerpedX = (int) Mathf.Lerp(lastPixelUV.x, pixelUV.x, t);
+                int lerpedY = (int) Mathf.Lerp(lastPixelUV.y, pixelUV.y, t);
+                texture.SetPixels(lerpedX, lerpedY, penSize, penSize, colorArray);
+            }
+        }
+        else
+        {
+            texture.SetPixels((int)pixelUV.x, (int)pixelUV.y, penSize, penSize, colorArray);
+            strokeCleared = false;
+        }
+
         texture.Apply();
+        lastPixelUV = pixelUV;
     }
 
     public void SetColor(Color color)
