@@ -30,7 +30,7 @@ public class BoardPointCollector : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        if (!other.gameObject.CompareTag(markerTag)) return;
+        if (!other.collider.gameObject.CompareTag(markerTag)) return;
         
         if (samplePoints != null) StopCoroutine(samplePoints);
 
@@ -40,7 +40,7 @@ public class BoardPointCollector : MonoBehaviour
 
     private void OnCollisionStay(Collision other)
     {
-        if (!other.gameObject.CompareTag(markerTag)) return;
+        if (!other.collider.gameObject.CompareTag(markerTag)) return;
 
         markerCollision = other;
     }
@@ -48,7 +48,7 @@ public class BoardPointCollector : MonoBehaviour
 
     private void OnCollisionExit(Collision other)
      {
-         if (!other.gameObject.CompareTag(markerTag)) return;
+         if (!other.collider.gameObject.CompareTag(markerTag)) return;
          
          StopCoroutine(samplePoints);
          boardRenderer.StrokeCleared = true;
