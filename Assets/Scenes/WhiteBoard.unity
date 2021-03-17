@@ -1107,6 +1107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textureSize: 2048
   penSize: 10
+  interpolationMethod: 1
   showDebug: 0
 --- !u!65 &1106697577
 BoxCollider:

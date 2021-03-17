@@ -10,8 +10,12 @@ public class BoardPointCollector : MonoBehaviour
 {
     // Parameters
     [SerializeField] [TagSelectorAtributte] private string markerTag;
+    
+    [Header("Sampling Parameters")]
     [SerializeField] [Min(0.0001f)] private float contactOffset = 0.001f;
     [SerializeField] private float sampleRate = 1f;
+    
+    [Header("Developer Options")]
     [SerializeField] private bool showDebug = false;
 
     // Raycast variables

@@ -6,8 +6,16 @@ using System.Linq;
 
 public class BoardRenderer : MonoBehaviour
 {
+    public enum InterpolationMethod { NoInterpolation, Interpolate }
+    
+    [Header("Canvas Parameters")]
     [SerializeField] private int textureSize = 2048;
     [SerializeField] private int penSize = 10;
+
+    [Header("Point Interpolation Method")]
+    public InterpolationMethod interpolationMethod = InterpolationMethod.Interpolate;
+    
+    [Header("Developer Options")]
     [SerializeField] private bool showDebug = false;
 
     private Texture2D texture;
@@ -52,10 +60,13 @@ public class BoardRenderer : MonoBehaviour
         Vector2 pixelUV = collisionHit.textureCoord;
         if(showDebug) Debug.Log("pixelUV TEXCOORD: " + pixelUV);
 
-        pixelUV.x *= texture.width;
-        pixelUV.y *= texture.height;
+        pixelUV.x = pixelUV.x * texture.width - 1 - penSize / 2f;
+        pixelUV.y = pixelUV.y * texture.height - 1 - penSize / 2f;
 
-        if (!strokeCleared)
+        pixelUV.x = Mathf.Clamp(pixelUV.x, 0f, texture.width - 1 - penSize);
+        pixelUV.y = Mathf.Clamp(pixelUV.y, 0f, texture.height - 1 - penSize);
+        
+        if (interpolationMethod == InterpolationMethod.Interpolate && !strokeCleared)
         {
             for (float t = 0f; t < 1f; t += 0.01f)
             {
