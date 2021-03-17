@@ -5,11 +5,12 @@ using System.Linq;
 using UnityEngine;
 using Es.InkPainter;
 
+[RequireComponent(typeof(MeshCollider), typeof(BoardRenderer))]
 public class BoardPointCollector : MonoBehaviour
 {
     // Parameters
     [SerializeField] [TagSelectorAtributte] private string markerTag;
-    [SerializeField] private float contactOffset = 0.01f;
+    [SerializeField] [Min(0.0001f)] private float contactOffset = 0.001f;
     [SerializeField] private float sampleRate = 1f;
     [SerializeField] private bool showDebug = false;
 

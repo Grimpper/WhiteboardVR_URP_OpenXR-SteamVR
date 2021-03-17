@@ -1015,7 +1015,7 @@ MonoBehaviour:
   markerTag: Marker
   contactOffset: 0.001
   sampleRate: 0.01
-  showDebug: 1
+  showDebug: 0
 --- !u!64 &1106697572
 MeshCollider:
   m_ObjectHideFlags: 0
