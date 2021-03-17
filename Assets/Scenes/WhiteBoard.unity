@@ -989,6 +989,7 @@ GameObject:
   - component: {fileID: 1106697575}
   - component: {fileID: 1106697574}
   - component: {fileID: 1106697573}
+  - component: {fileID: 1106697577}
   - component: {fileID: 1106697572}
   - component: {fileID: 1106697571}
   - component: {fileID: 1106697576}
@@ -1012,8 +1013,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   markerTag: Marker
+  contactOffset: 0.001
   sampleRate: 0.01
-  showDebug: 0
+  showDebug: 1
 --- !u!64 &1106697572
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1106,6 +1108,19 @@ MonoBehaviour:
   textureSize: 2048
   penSize: 10
   showDebug: 0
+--- !u!65 &1106697577
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106697570}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 0.04677695}
+  m_Center: {x: 0, y: 0, z: -0.023388475}
 --- !u!1 &1182955756
 GameObject:
   m_ObjectHideFlags: 0
