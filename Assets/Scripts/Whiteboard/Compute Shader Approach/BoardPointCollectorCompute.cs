@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshCollider), typeof(BoardRenderer))]
-public class BoardPointCollector : MonoBehaviour
+[RequireComponent(typeof(MeshCollider), typeof(BoardComputeRenderer))]
+public class BoardPointCollectorCompute : MonoBehaviour
 {
     // Parameters
     [SerializeField] [TagSelectorAtributte] private string markerTag;
@@ -24,7 +24,7 @@ public class BoardPointCollector : MonoBehaviour
     
     // Intern variables
     private IEnumerator samplePoints;
-    private BoardRenderer boardRenderer;
+    private BoardComputeRenderer boardComputeRenderer;
     private Collision markerCollision = new Collision();
     
     // Original collided object variables
@@ -34,7 +34,7 @@ public class BoardPointCollector : MonoBehaviour
     {
         MeshCollider boardCollider = GetComponent<MeshCollider>();
         boardCollider.contactOffset = contactOffset;
-        boardRenderer = GetComponent<BoardRenderer>();
+        boardComputeRenderer = GetComponent<BoardComputeRenderer>();
         layerMask = (int)Mathf.Pow(2f, gameObject.layer);
     }
 
@@ -83,7 +83,7 @@ public class BoardPointCollector : MonoBehaviour
          if (!other.collider.gameObject.CompareTag(markerTag)) return;
          
          StopCoroutine(samplePoints);
-         boardRenderer.StrokeCleared = true;
+         boardComputeRenderer.StrokeCleared = true;
          
          if(showDebug) Debug.Log("Decollided: stopping sampling coroutine");
      }
@@ -128,8 +128,8 @@ public class BoardPointCollector : MonoBehaviour
              Ray ray = new Ray(raycastOrigin, collisionAverageNormal);
              if (Physics.Raycast(ray, out raycastHit, rayLength, layerMask, QueryTriggerInteraction.Ignore))
              {
-                 boardRenderer.SetColor(markerCollision.gameObject.GetComponent<Marker>().Color);
-                 boardRenderer.CollisionHit = raycastHit;
+                 boardComputeRenderer.Color = markerCollision.gameObject.GetComponent<Marker>().Color;
+                 boardComputeRenderer.CollisionHit = raycastHit;
                  
                  if (showDebug)
                  {

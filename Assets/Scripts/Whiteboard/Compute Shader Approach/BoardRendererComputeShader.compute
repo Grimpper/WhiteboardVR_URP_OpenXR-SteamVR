@@ -1,0 +1,54 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel NoInterpolation
+#pragma kernel Interpolate
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Result;
+float _Resolution;
+float _PenSize;
+
+float2 _PixelUV;
+float2 _LastPixelUV;
+
+bool _StrokeCleared;
+
+[numthreads(8,8,1)]
+void NoInterpolation (uint3 id : SV_DispatchThreadID)
+{
+    const int2 _MousePos = _PixelUV * _Resolution;
+    float dist = distance(float2(id.xy), float2(_MousePos));
+
+
+    if(dist < _PenSize)
+    {
+        float4 baseColor = Result[id.xy];
+        float4 color = float4(1, 0, 0, 0);
+        float4 blendResult = color * (1 - dist / _PenSize)  + baseColor * dist / _PenSize ;
+
+        Result[id.xy] = blendResult;
+    }
+}
+
+float Line( float2 p, float2 a, float2 b ) // ID over line?
+{
+    float2 pa = p-a, ba = b-a;
+    float h = saturate( dot(pa,ba)/dot(ba,ba) );
+    float2 d = pa - ba * h;
+    return dot(d,d);
+}
+
+[numthreads(8,8,1)]
+void Interpolate (uint3 id : SV_DispatchThreadID)
+{
+    float2 uv = float2(id.xy / _Resolution);
+    float k = _StrokeCleared ? 1 : Line(uv,_LastPixelUV,_PixelUV);
+   
+    float thickness = 0.0001;
+    
+    float4 baseColor = Result[id.xy];
+    float4 color = float4(1, 0, 0, 0);
+    float4 blendResult = lerp( color, baseColor, smoothstep(0.0, thickness, k) );
+    
+    Result[id.xy] = blendResult;
+}
