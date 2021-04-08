@@ -6,14 +6,23 @@ using Valve.VR.InteractionSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    // OPTIONS
+    [Header("Input & Objects")]
+    [SerializeField] private SteamVR_Action_Vector2 joystick;
+    [SerializeField] private Transform head;
+    [SerializeField] private RoomCollider roomCollider;
+    private CharacterController characterController;
+    
+    [Header("Parameters")]
+    public float speed = 5;
+    public float acceleration = 5;
+    public float gravity = 10;
     public bool allowAirMovement;
     
-    // OBJECTS
-    private CharacterController characterController;
-    public SteamVR_Action_Vector2 joystick;
-    public Transform head;
-    public RoomCollider roomCollider;
+    [Header("State")]
+    [SerializeField, CustomProperties.ReadOnly] private bool _grounded;
+    
+    [Header("Developer Options")]
+    [SerializeField] private bool showDebug = false;
     
     // INPUTS
     private Vector2 input;
@@ -22,21 +31,15 @@ public class PlayerController : MonoBehaviour
     private Vector3 headForward;
     private Vector3 headRight;
     
-    // GRAVITY
-    [SerializeField, ReadOnly] private bool grounded;
-    private float gravity = 10;
-    
     // PHYSICS
     private Vector3 direction;
     private Vector3 velocity;
     private Vector3 velocityXZ;
-    private float speed = 5;
-    public float acceleration = 5;
+    
 
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
-        //roomCollider = GameObject.Find("RoomCollider").GetComponent<RoomCollider>();
     }
 
     private void Update()
@@ -70,20 +73,20 @@ public class PlayerController : MonoBehaviour
 
     void CalculateGround()
     {
-        // RAYCAST IMPLEMENTATION
         /*
+        // RAYCAST IMPLEMENTATION
+        
         int layerMask = 1 << 8;
         float rayLength = 0.2f;
         RaycastHit hit;
         Ray ray = new Ray(head.position - head.localPosition.y * Vector3.up, Vector3.down);
 
         grounded = Physics.Raycast(ray, out hit, rayLength, ~layerMask);
-        */
+        
         // RAYCAST IMPLEMENTATION
+        */ // Allows to detect ground only on specific layers
         
-        grounded = characterController.isGrounded;
-        
-        
+        _grounded = characterController.isGrounded;
     }
     
     void DoMove()
@@ -101,7 +104,7 @@ public class PlayerController : MonoBehaviour
 
     void DoGravity()
     {
-        if (grounded)
+        if (_grounded)
         {
             velocity.y = -0.5f;
         }
@@ -175,13 +178,13 @@ public class PlayerController : MonoBehaviour
         Debug.DrawRay(roomCollider.lastCollisionTransform,rayLength * Vector3.down, Color.red, duration: 10000, false);
 
         transform.position = raycastHit.point - Vector3.ProjectOnPlane(head.position - transform.position, Vector3.up);
-        
-        // DEBUGGING //
-        /*
-        Debug.Log("RAYCAST POINT: " + raycastHit.point);
-        Debug.Log("PLAYER TO: " + transform.position);
-        Debug.Log("RAYCAST: " + head.position);
-        Debug.Log("CAMERA IS ON: " + head.position);
-        */
+
+        if (showDebug)
+        {
+            Debug.Log("RAYCAST POINT: " + raycastHit.point);
+            Debug.Log("PLAYER TO: " + transform.position);
+            Debug.Log("RAYCAST: " + head.position);
+            Debug.Log("CAMERA IS ON: " + head.position);
+        }
     }
 }

@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
+using CustomProperties;
 
 public class RoomCollider : MonoBehaviour
 {
-    // OBJECTS
-    public Transform head;
-    public Transform player;
+    [Header("Objects")]
+    [SerializeField] private Transform head;
+    [SerializeField] private Transform player;
     
+    [Tooltip("Ignore gameObject with this tag when checking player's transform inside a collision")]
+    [TagSelectorAtributte] public string ignoreTag;
+
+    [Header("Data")]
+    [CustomProperties.ReadOnly] public bool insideCollider;
+    [CustomProperties.ReadOnly] public Vector3 lastCollisionTransform;
+
     private CapsuleCollider capsuleCollider;
     
-    // ATTRIBUTES
-    public Vector3 lastCollisionTransform;
-    public bool insideCollider;
-
+    
     private void Start()
     {
         capsuleCollider = GetComponent<CapsuleCollider>();
@@ -39,19 +45,17 @@ public class RoomCollider : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Ground"))
-        {
-            lastCollisionTransform = capsuleCollider.transform.position;
-            insideCollider = true;
-        }
+        if (other.CompareTag(ignoreTag)) return;
+        
+        lastCollisionTransform = capsuleCollider.transform.position;
+        insideCollider = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag("Ground"))
-        {
-            lastCollisionTransform = capsuleCollider.transform.position;
-            insideCollider = false;
-        }
+        if (other.CompareTag(ignoreTag)) return;
+        
+        lastCollisionTransform = capsuleCollider.transform.position;
+        insideCollider = false;
     }
 }

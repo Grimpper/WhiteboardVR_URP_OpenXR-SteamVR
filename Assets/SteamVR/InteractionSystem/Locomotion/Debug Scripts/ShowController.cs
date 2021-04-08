@@ -8,7 +8,7 @@ public class ShowController : MonoBehaviour
 {
     [SerializeField] private bool showController = false;
 
-    private void Update()
+    private void Start()
     {
         foreach (var hand in Player.instance.hands)
         {
