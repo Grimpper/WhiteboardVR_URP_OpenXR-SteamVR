@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class Marker : MonoBehaviour
 {
-    [SerializeField]
-    private Color color;
+    [SerializeField] private Color color;
 
     public Color Color => color;
 }

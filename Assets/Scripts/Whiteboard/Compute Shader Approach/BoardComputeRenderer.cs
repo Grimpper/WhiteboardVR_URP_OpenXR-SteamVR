@@ -36,7 +36,7 @@ public class BoardComputeRenderer : MonoBehaviour
         }
     }
 
-    private Color color;
+    private Color color = Color.black;
 
     public Color Color
     {
@@ -66,18 +66,22 @@ public class BoardComputeRenderer : MonoBehaviour
         Graphics.Blit(iniTex, renderTexture);
         
         GetComponent<Renderer>().material.SetTexture(BaseMap, renderTexture);
+        
         computeShader.SetTexture(kernel, "Result", renderTexture);
         computeShader.SetFloat("_Resolution", resolution);
         computeShader.SetFloat("_PenSize", penSize);
+        computeShader.SetVector("_Color", color);
+        computeShader.SetBool("_StrokeCleared", strokeCleared);
+        
+        Vector2 startPos = Vector2.negativeInfinity;
+        computeShader.SetVector("_PixelUV", startPos);
+        computeShader.SetVector("_LastPixelUV", startPos);
 
         computeShader.GetKernelThreadGroupSizes(kernel, out var threadX, out var threadY, out _);
         dispatchCount.x = Mathf.CeilToInt((float)resolution / threadX);
         dispatchCount.y = Mathf.CeilToInt((float)resolution / threadY);
         
-        Vector2 startPos = Vector2.negativeInfinity;
-        computeShader.SetBool("_StrokeCleared", strokeCleared);
-        computeShader.SetVector("_PixelUV", startPos);
-        computeShader.SetVector("_LastPixelUV", startPos);
+        
         computeShader.Dispatch(kernel, dispatchCount.x, dispatchCount.y, 1);
     }
     
@@ -85,6 +89,7 @@ public class BoardComputeRenderer : MonoBehaviour
     {
         Vector2 pixelUV = collisionHit.textureCoord;
         
+        computeShader.SetVector("_Color", color);
         computeShader.SetBool("_StrokeCleared", strokeCleared);
         computeShader.SetVector("_PixelUV", pixelUV);
         computeShader.SetVector("_LastPixelUV", lastPixelUV);

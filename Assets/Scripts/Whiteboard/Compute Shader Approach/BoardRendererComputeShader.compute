@@ -7,6 +7,7 @@
 RWTexture2D<float4> Result;
 float _Resolution;
 float _PenSize;
+float4 _Color;
 
 float2 _PixelUV;
 float2 _LastPixelUV;
@@ -23,8 +24,7 @@ void NoInterpolation (uint3 id : SV_DispatchThreadID)
     if(dist < _PenSize)
     {
         float4 baseColor = Result[id.xy];
-        float4 color = float4(1, 0, 0, 0);
-        float4 blendResult = color * (1 - dist / _PenSize)  + baseColor * dist / _PenSize ;
+        float4 blendResult = _Color * (1 - dist / _PenSize)  + baseColor * dist / _PenSize ;
 
         Result[id.xy] = blendResult;
     }
@@ -47,8 +47,7 @@ void Interpolate (uint3 id : SV_DispatchThreadID)
     float thickness = 0.0001;
     
     float4 baseColor = Result[id.xy];
-    float4 color = float4(1, 0, 0, 0);
-    float4 blendResult = lerp( color, baseColor, smoothstep(0.0, thickness, k) );
+    float4 blendResult = lerp( _Color, baseColor, smoothstep(0.0, thickness, k) );
     
     Result[id.xy] = blendResult;
 }
