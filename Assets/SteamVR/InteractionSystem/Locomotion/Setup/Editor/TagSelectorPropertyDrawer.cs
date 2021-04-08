@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+public class TagSelectorAtributte : AbstractSelectorAtributte
+{
+    
+}
+
 [CustomPropertyDrawer(typeof(TagSelectorAtributte))]
 public class TagSelectorPropertyDrawer : AbstractSelectorPropertyAtributte
 {

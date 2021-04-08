@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+public abstract class AbstractSelectorAtributte : PropertyAttribute
+{
+    public bool useDefaultFieldDrawer = false;
+}
+
 public abstract class AbstractSelectorPropertyAtributte : PropertyDrawer
 {
     public override void OnGUI(Rect position, SerializedProperty selectedItem, GUIContent label)

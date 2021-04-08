@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+public class LayerSelectorAtributte : AbstractSelectorAtributte
+{
+    
+}
+
 [CustomPropertyDrawer(typeof(LayerSelectorAtributte))]
 public class LayerSelectorPropertyDrawer : AbstractSelectorPropertyAtributte
 {
