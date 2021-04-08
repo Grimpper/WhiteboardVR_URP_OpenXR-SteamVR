@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using CustomProperties;
+using Valve.VR.InteractionSystem;
 
 [RequireComponent(typeof(MeshCollider), typeof(BoardComputeRenderer))]
 public class BoardPointCollectorCompute : MonoBehaviour
@@ -31,12 +32,16 @@ public class BoardPointCollectorCompute : MonoBehaviour
     // Original collided object variables
     private float originalContactOffset;
     
+    // Player
+    private Player player = null;
+    
     private void Start()
     {
         MeshCollider boardCollider = GetComponent<MeshCollider>();
         boardCollider.contactOffset = contactOffset;
         boardComputeRenderer = GetComponent<BoardComputeRenderer>();
         layerMask = (int)Mathf.Pow(2f, gameObject.layer);
+        player = Player.instance;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -65,6 +70,13 @@ public class BoardPointCollectorCompute : MonoBehaviour
         if (samplePoints != null) StopCoroutine(samplePoints);
         samplePoints = SamplePointsRoutine();
         StartCoroutine(samplePoints);
+        
+        foreach (var hand in player.hands)
+        {
+            if(showDebug) Debug.Log(hand.name);
+            if (hand.currentAttachedObject != null && hand.currentAttachedObject.name == other.gameObject.name)
+                hand.TriggerHapticPulse(1000);
+        }
         
         if(showDebug) Debug.Log("Collided: starting sampling coroutine");
     }
