@@ -1120,8 +1120,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 0.04677695}
-  m_Center: {x: 0, y: 0, z: -0.023388475}
+  m_Size: {x: 1, y: 1, z: 0.04}
+  m_Center: {x: 0, y: 0, z: -0.02}
 --- !u!1 &1182955756
 GameObject:
   m_ObjectHideFlags: 0
@@ -1272,10 +1272,11 @@ GameObject:
   - component: {fileID: 1305155188}
   - component: {fileID: 1305155187}
   - component: {fileID: 1305155186}
+  - component: {fileID: 1305155189}
   - component: {fileID: 1305155185}
   - component: {fileID: 1305155184}
   - component: {fileID: 1305155183}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ComputeBoard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1310,6 +1311,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb9fefbaf335f847bdbc8e7db719852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resolution: 1080
   penSize: 5
   interpolationMethod: 1
   showDebug: 0
@@ -1386,13 +1388,26 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1305155182}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -2.8778791, y: 1, z: -3.8809628}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -4, y: 1, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!65 &1305155189
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1305155182}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0000002, y: 1, z: 0.04}
+  m_Center: {x: 0, y: 0, z: -0.02}
 --- !u!1 &1556300204
 GameObject:
   m_ObjectHideFlags: 0

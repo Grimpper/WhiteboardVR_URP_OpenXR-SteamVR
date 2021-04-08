@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class BoardComputeRenderer : MonoBehaviour
 {
+    public ComputeShader computeShader;
     public enum InterpolationMethod { NoInterpolation, Interpolate }
     
     [Header("Canvas Parameters")]
+    [SerializeField, Min(1)] private int resolution = 1080;
     [SerializeField] private int penSize = 10;
+    public Texture2D iniTex;
 
     [Header("Point Interpolation Method")]
     public InterpolationMethod interpolationMethod = InterpolationMethod.NoInterpolation;
     
-    [Header("Developer Options")]
-    [SerializeField] private bool showDebug = false;
-    
+    [Header("Result Text")]
+    [SerializeField] private RenderTexture renderTexture;
+
     private bool strokeCleared = true;
 
     public bool StrokeCleared
@@ -40,23 +43,17 @@ public class BoardComputeRenderer : MonoBehaviour
     }
     
     private Vector2 lastPixelUV;
-    
-    #region Shader Variables
-    
-    public ComputeShader computeShader;
-    public Texture2D iniTex;
-    [SerializeField] private RenderTexture renderTexture;
 
-    private int resolution;
     private int kernel;
     private Vector2Int dispatchCount;
     private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
-
-    #endregion
+    
+    
+    [Header("Developer Options")]
+    [SerializeField] private bool showDebug = false;
     
     void Start()
     {
-        resolution = iniTex.width;
         kernel = computeShader.FindKernel(interpolationMethod.ToString());
 
         renderTexture = new RenderTexture(resolution, resolution, 0);
@@ -72,13 +69,14 @@ public class BoardComputeRenderer : MonoBehaviour
         computeShader.SetFloat("_Resolution", resolution);
         computeShader.SetFloat("_PenSize", penSize);
 
-        uint threadX = 0;
-        uint threadY = 0;
-        uint threadZ = 0;
-        computeShader.GetKernelThreadGroupSizes(kernel, out threadX, out threadY, out threadZ);
+        computeShader.GetKernelThreadGroupSizes(kernel, out var threadX, out var threadY, out _);
         dispatchCount.x = Mathf.CeilToInt((float)resolution / threadX);
         dispatchCount.y = Mathf.CeilToInt((float)resolution / threadY);
         
+        Vector2 startPos = Vector2.negativeInfinity;
+        computeShader.SetBool("_StrokeCleared", strokeCleared);
+        computeShader.SetVector("_PixelUV", startPos);
+        computeShader.SetVector("_LastPixelUV", startPos);
         computeShader.Dispatch(kernel, dispatchCount.x, dispatchCount.y, 1);
     }
     
