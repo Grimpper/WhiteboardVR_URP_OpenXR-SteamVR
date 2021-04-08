@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using CustomProperties;
 
 [RequireComponent(typeof(MeshCollider), typeof(BoardRenderer))]
 public class BoardPointCollector : MonoBehaviour

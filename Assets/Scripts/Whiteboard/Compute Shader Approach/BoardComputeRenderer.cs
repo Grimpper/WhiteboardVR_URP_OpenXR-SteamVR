@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CustomProperties;
 
 public class BoardComputeRenderer : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class BoardComputeRenderer : MonoBehaviour
     public InterpolationMethod interpolationMethod = InterpolationMethod.NoInterpolation;
     
     [Header("Result Text")]
-    [SerializeField] private RenderTexture renderTexture;
+    [SerializeField, ReadOnly] private RenderTexture renderTexture;
 
     private bool strokeCleared = true;
 

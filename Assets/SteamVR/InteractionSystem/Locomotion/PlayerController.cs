@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.Collections;
 using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
@@ -22,7 +23,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 headRight;
     
     // GRAVITY
-    public bool grounded;
+    [SerializeField, ReadOnly] private bool grounded;
     private float gravity = 10;
     
     // PHYSICS

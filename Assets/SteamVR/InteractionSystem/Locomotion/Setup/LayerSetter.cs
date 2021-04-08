@@ -6,6 +6,7 @@ using Unity.Collections;
 using UnityEditor.UIElements;
 using UnityEngine;
 using Valve.VR.InteractionSystem;
+using CustomProperties;
 
 public class LayerSetter : MonoBehaviour
 {
