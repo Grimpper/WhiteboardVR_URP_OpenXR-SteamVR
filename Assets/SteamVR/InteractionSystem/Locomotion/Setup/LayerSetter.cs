@@ -25,6 +25,9 @@ public class LayerSetter : MonoBehaviour
     [Space(10)]
     [Tooltip("Update layers every frame")]
     public bool updateDynamically = true;
+    
+    [Header("Developer Options")]
+    [SerializeField] private bool showDebug = false;
 
     private int baseLayer;
     private int altLayer;
@@ -36,12 +39,15 @@ public class LayerSetter : MonoBehaviour
         altLayer =  LayerMask.NameToLayer(setAlternativeLayerTo);
 
         _altLayerTag = alternativeTag;
-        
-        Debug.Log("Selected Base Layer: " + setBaseLayerTo + " (" + baseLayer + ")");
-        Debug.Log("Selected Hand Layer: " + setAlternativeLayerTo + " (" + altLayer + ")");
-        Debug.Log("Selected Tag: " + _altLayerTag);
 
         SetLayerRecursively(gameObject, baseLayer, altLayer);
+        
+        if (showDebug)
+        {
+            Debug.Log("Selected Base Layer: " + setBaseLayerTo + " (" + baseLayer + ")");
+            Debug.Log("Selected Hand Layer: " + setAlternativeLayerTo + " (" + altLayer + ")");
+            Debug.Log("Selected Tag: " + _altLayerTag);
+        }
     }
 
     private void Update()

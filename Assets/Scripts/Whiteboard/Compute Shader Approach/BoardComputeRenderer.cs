@@ -18,6 +18,9 @@ public class BoardComputeRenderer : MonoBehaviour
     
     [Header("Result Text")]
     [SerializeField, ReadOnly] private RenderTexture renderTexture;
+    
+    [Header("Developer Options")]
+    [SerializeField] private bool showDebug = false;
 
     private bool strokeCleared = true;
 
@@ -49,10 +52,7 @@ public class BoardComputeRenderer : MonoBehaviour
     private Vector2Int dispatchCount;
     private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
     
-    
-    [Header("Developer Options")]
-    [SerializeField] private bool showDebug = false;
-    
+
     void Start()
     {
         kernel = computeShader.FindKernel(interpolationMethod.ToString());
