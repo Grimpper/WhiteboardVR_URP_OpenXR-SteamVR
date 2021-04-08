@@ -1888,6 +1888,10 @@ PrefabInstance:
       propertyPath: enablePhysicsWhileGrabbing
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5432544609105267194, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
+      propertyPath: ignoreTag
+      value: Ground
+      objectReference: {fileID: 0}
     - target: {fileID: 5432544609378861143, guid: 6eb0710ecb2dbe84b87a82f1d55bc634, type: 3}
       propertyPath: m_TagString
       value: Hand
