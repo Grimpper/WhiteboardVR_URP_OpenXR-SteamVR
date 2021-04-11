@@ -57,10 +57,10 @@ public class BoardComputeRenderer : MonoBehaviour
     {
         kernel = computeShader.FindKernel(interpolationMethod.ToString());
 
-        renderTexture = new RenderTexture(resolution, resolution, 0);
-        renderTexture.wrapMode = TextureWrapMode.Clamp;
-        renderTexture.filterMode = FilterMode.Point;
-        renderTexture.enableRandomWrite = true;
+        renderTexture = new RenderTexture(resolution, resolution, 0)
+        {
+            wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Point, enableRandomWrite = true
+        };
         renderTexture.Create();
         
         Graphics.Blit(iniTex, renderTexture);

@@ -30,21 +30,21 @@ void NoInterpolation (uint3 id : SV_DispatchThreadID)
     }
 }
 
-float Line( float2 p, float2 a, float2 b ) // ID over line?
+float distanceToLine( float2 p, float2 a, float2 b )
 {
     float2 pa = p-a, ba = b-a;
     float h = saturate( dot(pa,ba)/dot(ba,ba) );
     float2 d = pa - ba * h;
-    return dot(d,d);
+    return sqrt(dot(d,d));
 }
 
 [numthreads(8,8,1)]
 void Interpolate (uint3 id : SV_DispatchThreadID)
 {
     float2 uv = float2(id.xy / _Resolution);
-    float k = _StrokeCleared ? 1 : Line(uv,_LastPixelUV,_PixelUV);
+    float k = _StrokeCleared ? 1 : distanceToLine(uv,_LastPixelUV,_PixelUV);
    
-    float thickness = 0.0001;
+    float thickness = 0.01;
     
     float4 baseColor = Result[id.xy];
     float4 blendResult = lerp( _Color, baseColor, smoothstep(0.0, thickness, k) );
