@@ -1,7 +1,7 @@
 {
    "action_manifest_version" : 0,
    "alias_info" : {},
-   "app_key" : "application.generated.unity.whiteboardvr_post_nimsony.exe",
+   "app_key" : "application.generated.unity.whiteboard_urpopenxrsteamvr.exe",
    "bindings" : {
       "/actions/buggy" : {
          "sources" : [
@@ -115,7 +115,7 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/default/in/interactui"
+                     "output" : "/actions/default/in/eraser"
                   }
                },
                "mode" : "button",

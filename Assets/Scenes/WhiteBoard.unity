@@ -1301,6 +1301,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   markerTag: Marker
+  eraseButton:
+    actionPath: /actions/default/in/Eraser
+    needsReinit: 0
   contactOffset: 0.001
   sampleRate: 0.01
   showDebug: 0
@@ -1317,12 +1320,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   computeShader: {fileID: 7200000, guid: 73c52277aac576e49bbd4b715adf4e5f, type: 3}
-  resolution: 1080
-  penSize: 5
-  iniTex: {fileID: 2800000, guid: 4d84db688effb8545b2677eeca9c4ca5, type: 3}
   interpolationMethod: 1
-  renderTexture: {fileID: 0}
+  resolution: 1080
+  penSize: 20
+  eraserSize: 20
+  feather: 10
+  backgroundTex: {fileID: 2800000, guid: 4d84db688effb8545b2677eeca9c4ca5, type: 3}
+  previousRenderTex: {fileID: 0}
+  liveRenderTex: {fileID: 0}
+  resultRenderTex: {fileID: 0}
   showDebug: 0
+  undoTexBufferSize: 10
 --- !u!64 &1305155185
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2091,7 +2099,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 586467a1f3084cb4c889b580d8cb0a26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  color: {r: 1, g: 0.2670764, b: 0.10849059, a: 0}
+  color: {r: 1, g: 0.2670764, b: 0.10849059, a: 1}
 --- !u!1001 &4347923924918424801
 PrefabInstance:
   m_ObjectHideFlags: 0

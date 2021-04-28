@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using CustomProperties;
+using Valve.VR;
 using Valve.VR.InteractionSystem;
 
 [RequireComponent(typeof(MeshCollider), typeof(BoardComputeRenderer))]
@@ -11,6 +12,10 @@ public class BoardPointCollectorCompute : MonoBehaviour
 {
     // Parameters
     [SerializeField] [TagSelectorAtributte] private string markerTag;
+    
+    // Actions
+    [Header("Input Actions")] [SerializeField]
+    private SteamVR_Action_Boolean eraseButton;
     
     [Header("Sampling Parameters")]
     [SerializeField] [Min(0.0001f)] private float contactOffset = 0.001f;
@@ -66,7 +71,7 @@ public class BoardPointCollectorCompute : MonoBehaviour
     private void OnCollisionEnter(Collision other)
     {
         if (!other.collider.gameObject.CompareTag(markerTag)) return;
-       
+
         if (samplePoints != null) StopCoroutine(samplePoints);
         samplePoints = SamplePointsRoutine();
         StartCoroutine(samplePoints);
@@ -143,6 +148,8 @@ public class BoardPointCollectorCompute : MonoBehaviour
              {
                  boardComputeRenderer.Color = markerCollision.gameObject.GetComponent<Marker>().Color;
                  boardComputeRenderer.CollisionHit = raycastHit;
+                 boardComputeRenderer.StrokeCleared = false;
+                 boardComputeRenderer.EraseMode = eraseButton.state;
                  
                  if (showDebug)
                  {
