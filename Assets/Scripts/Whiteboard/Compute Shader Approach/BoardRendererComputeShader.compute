@@ -4,7 +4,7 @@
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
-Texture2D<float4> _BackgroundTex;
+RWTexture2D<float4> _BackgroundTex;
 RWTexture2D<float4> _PreviousTex;
 RWTexture2D<float4> _LiveTex;
 RWTexture2D<float4> _ResultTex;
