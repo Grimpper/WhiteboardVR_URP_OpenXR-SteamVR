@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 
 [RequireComponent(typeof(BoardPointCollectorCompute))]
 public class BoardComputeRenderer : MonoBehaviour
@@ -16,6 +17,7 @@ public class BoardComputeRenderer : MonoBehaviour
     [SerializeField, Min(1)] private float eraserSize = 10;
     [SerializeField, Min(0.1f)] private float feather = 10;
     public Texture2D backgroundTex;
+    private RenderTexture backgroundTexGamma;
 
     [Header("Result Text")]
     [SerializeField] private RenderTexture previousRenderTex;
@@ -23,7 +25,7 @@ public class BoardComputeRenderer : MonoBehaviour
     [SerializeField] private RenderTexture resultRenderTex;
 
     private RenderTexture transparentRenderTex;
-    private bool strokeWasCleared = false;
+    private bool wasPainting = false;
     
     
     [Header("Developer Options")]
@@ -37,14 +39,14 @@ public class BoardComputeRenderer : MonoBehaviour
 
     private static readonly Vector2 OUT_OF_RANGE = new Vector2(9, 9);
 
-    private bool strokeCleared = true;
+    private bool painting = false;
 
-    public bool StrokeCleared
+    public bool Painting
     {
         set
         {
-            strokeCleared = value;
-            if (strokeCleared && !strokeWasCleared)
+            painting = value;
+            if (!painting && wasPainting)
             {
                 Graphics.Blit(transparentRenderTex, liveRenderTex);
                 
@@ -54,12 +56,12 @@ public class BoardComputeRenderer : MonoBehaviour
                 
                 Graphics.Blit(previousRenderTex, texBuffer[currentTexIndex]);
 
-                strokeWasCleared = true;
+                wasPainting = false;
                 
                 if (showDebug) Debug.Log("CurrentTexIndex: " + currentTexIndex);
             }
 
-            if (!strokeCleared) strokeWasCleared = false;
+            if (painting) wasPainting = true;
         }
     }
 
@@ -139,7 +141,7 @@ public class BoardComputeRenderer : MonoBehaviour
     {
         CreateBoardTextures();
 
-        Graphics.Blit(backgroundTex, resultRenderTex);
+        Graphics.Blit(backgroundTex, backgroundTexGamma);
         
         GetComponent<Renderer>().material.SetTexture(BaseMap, resultRenderTex);
         
@@ -150,18 +152,18 @@ public class BoardComputeRenderer : MonoBehaviour
     {
         kernel = computeShader.FindKernel(interpolationMethod.ToString());
         
-        computeShader.SetTexture(kernel, "_BackgroundTex", backgroundTex);
+        computeShader.SetTexture(kernel, "_BackgroundTex", backgroundTexGamma);
         computeShader.SetTexture(kernel, "_PreviousTex", previousRenderTex);
         computeShader.SetTexture(kernel, "_LiveTex", liveRenderTex);
         computeShader.SetTexture(kernel, "_ResultTex", resultRenderTex);
         
-        computeShader.SetFloat("_ResolutionInitTex", backgroundTex.width);
+        computeShader.SetFloat("_ResolutionInitTex", backgroundTexGamma.width);
         computeShader.SetFloat("_ResolutionResult", resolution);
         computeShader.SetVector("_Color", color);
         computeShader.SetFloat("_PenSize", penSize);
         computeShader.SetFloat("_EraserSize", eraserSize);
         computeShader.SetFloat("_Feather", feather);
-        computeShader.SetBool("_StrokeCleared", strokeCleared);
+        computeShader.SetBool("_Painting", painting);
         computeShader.SetBool("_EraseMode", eraseMode);
         
         computeShader.SetVector("_PixelUV", OUT_OF_RANGE);
@@ -186,6 +188,12 @@ public class BoardComputeRenderer : MonoBehaviour
              };
              texBuffer[i].Create();
          }
+
+        backgroundTexGamma = new RenderTexture(resolution, resolution, 0)
+        {
+            wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Point, enableRandomWrite = true
+        };
+        backgroundTexGamma.Create();
 
         previousRenderTex = new RenderTexture(resolution, resolution, 0)
         {
@@ -220,7 +228,7 @@ public class BoardComputeRenderer : MonoBehaviour
         computeShader.SetFloat("_PenSize", penSize);
         computeShader.SetFloat("_EraserSize", eraserSize);
         computeShader.SetFloat("_Feather", feather);
-        computeShader.SetBool("_StrokeCleared", strokeCleared);
+        computeShader.SetBool("_Painting", painting);
         computeShader.SetBool("_EraseMode", eraseMode);
         computeShader.SetVector("_PixelUV", pixelUV);
         computeShader.SetVector("_LastPixelUV", lastPixelUV);

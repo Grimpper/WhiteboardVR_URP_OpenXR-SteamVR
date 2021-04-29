@@ -101,7 +101,7 @@ public class BoardPointCollectorCompute : MonoBehaviour
          if (!other.collider.gameObject.CompareTag(markerTag)) return;
          
          StopCoroutine(samplePoints);
-         boardComputeRenderer.StrokeCleared = true;
+         boardComputeRenderer.Painting = false;
          
          if(showDebug) Debug.Log("Decollided: stopping sampling coroutine");
      }
@@ -148,7 +148,7 @@ public class BoardPointCollectorCompute : MonoBehaviour
              {
                  boardComputeRenderer.Color = markerCollision.gameObject.GetComponent<Marker>().Color;
                  boardComputeRenderer.CollisionHit = raycastHit;
-                 boardComputeRenderer.StrokeCleared = false;
+                 boardComputeRenderer.Painting = true;
                  boardComputeRenderer.EraseMode = eraseButton.state;
                  
                  if (showDebug)

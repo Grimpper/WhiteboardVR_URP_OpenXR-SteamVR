@@ -19,7 +19,7 @@ float4 _Color;
 float2 _PixelUV;
 float2 _LastPixelUV;
 
-bool _StrokeCleared;
+bool _Painting;
 bool _EraseMode;
 
 [numthreads(8,8,1)]
@@ -68,7 +68,7 @@ void Interpolate (uint3 id : SV_DispatchThreadID)
     float featherDistance = _Feather * 0.0005;
     float2 uv = float2(id.xy / _ResolutionResult);
     
-    float distUV = _StrokeCleared ? 1 : distanceToLine(uv,_LastPixelUV,_PixelUV);
+    float distUV = _Painting ? distanceToLine(uv,_LastPixelUV,_PixelUV) : 1;
    
     if (_EraseMode)
     {
