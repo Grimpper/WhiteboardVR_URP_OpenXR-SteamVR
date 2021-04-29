@@ -147,9 +147,10 @@ public class BoardPointCollectorCompute : MonoBehaviour
              if (Physics.Raycast(ray, out raycastHit, rayLength, layerMask, QueryTriggerInteraction.Ignore))
              {
                  boardComputeRenderer.Color = markerCollision.gameObject.GetComponent<Marker>().Color;
-                 boardComputeRenderer.CollisionHit = raycastHit;
-                 boardComputeRenderer.Painting = true;
                  boardComputeRenderer.EraseMode = eraseButton.state;
+                 
+                 boardComputeRenderer.CollisionHit = raycastHit; // Dispatches shader
+                 boardComputeRenderer.Painting = true;
                  
                  if (showDebug)
                  {
