@@ -25,7 +25,6 @@ public class BoardPointCollectorCompute : MonoBehaviour
     [SerializeField] private bool showDebug = false;
 
     // Raycast variables
-    public RaycastHit raycastHit;
     private float raycastOffset = 0.1f;
     private int layerMask;
     
@@ -144,7 +143,7 @@ public class BoardPointCollectorCompute : MonoBehaviour
 
              float rayLength = Mathf.Infinity;
              Ray ray = new Ray(raycastOrigin, collisionAverageNormal);
-             if (Physics.Raycast(ray, out raycastHit, rayLength, layerMask, QueryTriggerInteraction.Ignore))
+             if (Physics.Raycast(ray, out var raycastHit, rayLength, layerMask, QueryTriggerInteraction.Ignore))
              {
                  boardComputeRenderer.Color = markerCollision.gameObject.GetComponent<Marker>().Color;
                  boardComputeRenderer.EraseMode = eraseButton.state;

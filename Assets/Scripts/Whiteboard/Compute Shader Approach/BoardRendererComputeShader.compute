@@ -36,6 +36,7 @@ void NoInterpolation (uint3 id : SV_DispatchThreadID)
     {
         float alpha = min( _PreviousTex[id.xy].a, lerp( 0.0, 1.0, smoothstep(eraserThickness - featherDistance, eraserThickness, distUV) ) );
         _PreviousTex[id.xy] = float4( _PreviousTex[id.xy].rgb, alpha );
+        _LiveTex[id.xy] = _PreviousTex[id.xy];
     }
     else
     {
