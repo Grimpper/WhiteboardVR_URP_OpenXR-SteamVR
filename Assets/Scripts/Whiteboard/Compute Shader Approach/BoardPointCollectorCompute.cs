@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using CustomProperties;
+using Valve.VR;
 using Valve.VR.InteractionSystem;
 
 [RequireComponent(typeof(MeshCollider), typeof(BoardComputeRenderer))]
@@ -11,6 +12,10 @@ public class BoardPointCollectorCompute : MonoBehaviour
 {
     // Parameters
     [SerializeField] [TagSelectorAtributte] private string markerTag;
+    
+    // Actions
+    [Header("Input Actions")] [SerializeField]
+    private SteamVR_Action_Boolean eraseButton;
     
     [Header("Sampling Parameters")]
     [SerializeField] [Min(0.0001f)] private float contactOffset = 0.001f;
@@ -20,7 +25,6 @@ public class BoardPointCollectorCompute : MonoBehaviour
     [SerializeField] private bool showDebug = false;
 
     // Raycast variables
-    public RaycastHit raycastHit;
     private float raycastOffset = 0.1f;
     private int layerMask;
     
@@ -66,7 +70,7 @@ public class BoardPointCollectorCompute : MonoBehaviour
     private void OnCollisionEnter(Collision other)
     {
         if (!other.collider.gameObject.CompareTag(markerTag)) return;
-       
+
         if (samplePoints != null) StopCoroutine(samplePoints);
         samplePoints = SamplePointsRoutine();
         StartCoroutine(samplePoints);
@@ -96,7 +100,7 @@ public class BoardPointCollectorCompute : MonoBehaviour
          if (!other.collider.gameObject.CompareTag(markerTag)) return;
          
          StopCoroutine(samplePoints);
-         boardComputeRenderer.StrokeCleared = true;
+         boardComputeRenderer.Painting = false;
          
          if(showDebug) Debug.Log("Decollided: stopping sampling coroutine");
      }
@@ -139,10 +143,13 @@ public class BoardPointCollectorCompute : MonoBehaviour
 
              float rayLength = Mathf.Infinity;
              Ray ray = new Ray(raycastOrigin, collisionAverageNormal);
-             if (Physics.Raycast(ray, out raycastHit, rayLength, layerMask, QueryTriggerInteraction.Ignore))
+             if (Physics.Raycast(ray, out var raycastHit, rayLength, layerMask, QueryTriggerInteraction.Ignore))
              {
                  boardComputeRenderer.Color = markerCollision.gameObject.GetComponent<Marker>().Color;
-                 boardComputeRenderer.CollisionHit = raycastHit;
+                 boardComputeRenderer.EraseMode = eraseButton.state;
+                 
+                 boardComputeRenderer.CollisionHit = raycastHit; // Dispatches shader
+                 boardComputeRenderer.Painting = true;
                  
                  if (showDebug)
                  {

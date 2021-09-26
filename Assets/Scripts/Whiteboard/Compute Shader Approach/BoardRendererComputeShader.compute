@@ -4,30 +4,53 @@
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
-RWTexture2D<float4> Result;
-float _Resolution;
+RWTexture2D<float4> _BackgroundTex;
+RWTexture2D<float4> _PreviousTex;
+RWTexture2D<float4> _LiveTex;
+RWTexture2D<float4> _ResultTex;
+
+float _ResolutionInitTex;
+float _ResolutionResult;
 float _PenSize;
+float _EraserSize;
+float _Feather;
 float4 _Color;
 
 float2 _PixelUV;
 float2 _LastPixelUV;
 
-bool _StrokeCleared;
+bool _Painting;
+bool _EraseMode;
 
 [numthreads(8,8,1)]
 void NoInterpolation (uint3 id : SV_DispatchThreadID)
 {
-    const int2 _MousePos = _PixelUV * _Resolution;
-    float dist = distance(float2(id.xy), float2(_MousePos));
+    float penThickness = _PenSize * 0.001;
+    float eraserThickness = _EraserSize * 0.001 * 1.5;
+    float featherDistance = _Feather * 0.0005;
+    float2 uv = float2(id.xy / _ResolutionResult);
 
-
-    if(dist < _PenSize)
+    float distUV = distance(float2(uv), float2(_PixelUV));
+    
+    if (_EraseMode)
     {
-        float4 baseColor = Result[id.xy];
-        float4 blendResult = _Color * (1 - dist / _PenSize)  + baseColor * dist / _PenSize ;
-
-        Result[id.xy] = blendResult;
+        float alpha = min( _PreviousTex[id.xy].a, lerp( 0.0, 1.0, smoothstep(eraserThickness - featherDistance, eraserThickness, distUV) ) );
+        _PreviousTex[id.xy] = float4( _PreviousTex[id.xy].rgb, alpha );
+        _LiveTex[id.xy] = _PreviousTex[id.xy];
     }
+    else
+    {
+        float4 blendResult;
+        float4 baseColor = _LiveTex[id.xy];
+        
+        blendResult.rgb = max( baseColor.rgb, lerp( _Color.rgb, baseColor.rgb, smoothstep(penThickness - featherDistance, penThickness, distUV) ) );
+        blendResult.a = max( baseColor.a, lerp( _Color.a, 0.0, smoothstep(penThickness - featherDistance, penThickness, distUV) ) );
+    
+        _LiveTex[id.xy] = blendResult;
+        _PreviousTex[id.xy] = max(_PreviousTex[id.xy], _LiveTex[id.xy]);
+    }
+
+    _ResultTex[id.xy] = lerp(_BackgroundTex[uv * _ResolutionInitTex], _PreviousTex[id.xy], _PreviousTex[id.xy].a);
 }
 
 float distanceToLine( float2 p, float2 a, float2 b )
@@ -41,13 +64,30 @@ float distanceToLine( float2 p, float2 a, float2 b )
 [numthreads(8,8,1)]
 void Interpolate (uint3 id : SV_DispatchThreadID)
 {
-    float2 uv = float2(id.xy / _Resolution);
-    float k = _StrokeCleared ? 1 : distanceToLine(uv,_LastPixelUV,_PixelUV);
+    float penThickness = _PenSize * 0.001;
+    float eraserThickness = _EraserSize * 0.001 * 1.5;
+    float featherDistance = _Feather * 0.0005;
+    float2 uv = float2(id.xy / _ResolutionResult);
+    
+    float distUV = _Painting ? distanceToLine(uv,_LastPixelUV,_PixelUV) : 1;
    
-    float thickness = 0.01;
+    if (_EraseMode)
+    {
+        float alpha = min( _PreviousTex[id.xy].a, lerp( 0.0, 1.0, smoothstep(eraserThickness - featherDistance, eraserThickness, distUV) ) );
+        _PreviousTex[id.xy] = float4( _PreviousTex[id.xy].rgb, alpha );
+        _LiveTex[id.xy] = _PreviousTex[id.xy];
+    }
+    else
+    {
+        float4 blendResult;
+        float4 baseColor = _LiveTex[id.xy];
+        
+        blendResult.rgb = max( baseColor.rgb, lerp( _Color.rgb, baseColor.rgb, smoothstep(penThickness - featherDistance, penThickness, distUV) ) );
+        blendResult.a = max( baseColor.a, lerp( _Color.a, 0.0, smoothstep(penThickness - featherDistance, penThickness, distUV) ) );
     
-    float4 baseColor = Result[id.xy];
-    float4 blendResult = lerp( _Color, baseColor, smoothstep(0.0, thickness, k) );
+        _LiveTex[id.xy] = blendResult;
+        _PreviousTex[id.xy] = max(_PreviousTex[id.xy], _LiveTex[id.xy]);
+    }
     
-    Result[id.xy] = blendResult;
+    _ResultTex[id.xy] = lerp(_BackgroundTex[uv * _ResolutionInitTex], _PreviousTex[id.xy], _PreviousTex[id.xy].a);
 }
