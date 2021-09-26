@@ -112,7 +112,7 @@ public class BoardComputeRenderer : MonoBehaviour
     
     private void OnGUI()
     {
-        if (GUI.Button(new Rect(10, 10, 50, 50), "Undo"))
+        if (GUI.Button(new Rect(10, 70, 50, 50), "Undo"))
         {
             DecreaseIndex(ref currentTexIndex, minTexIndex);
             Graphics.Blit(texBuffer[currentTexIndex], previousRenderTex);
@@ -124,7 +124,7 @@ public class BoardComputeRenderer : MonoBehaviour
             if (showDebug) Debug.Log("CurrentTexIndex: " + currentTexIndex);
         }
         
-        if (GUI.Button(new Rect(70, 10, 50, 50), "Redo"))
+        if (GUI.Button(new Rect(70, 70, 50, 50), "Redo"))
         {
             IncreaseIndex(ref currentTexIndex, maxTexIndex);
             Graphics.Blit(texBuffer[currentTexIndex], previousRenderTex);
