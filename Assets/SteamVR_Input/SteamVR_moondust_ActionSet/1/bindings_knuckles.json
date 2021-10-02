@@ -1,0 +1,124 @@
+{
+  
+  "bindings": {
+    "/actions/buggybuddy": {
+      "chords": [],
+      "poses": [],
+      "haptics": [],
+      "sources": [],
+      "skeleton": []
+    },
+    "/actions/default": {
+      "chords": [],
+      "poses": [],
+      "haptics": [],
+      "sources": [],
+      "skeleton": []
+    },
+    "/actions/grenade": {
+      "chords": [],
+      "poses": [],
+      "haptics": [],
+      "sources": [],
+      "skeleton": []
+    },
+    "/actions/gun": {
+      "chords": [],
+      "poses": [],
+      "haptics": [],
+      "sources": [],
+      "skeleton": []
+    },
+    "/actions/raw": {
+      "chords": [],
+      "poses": [],
+      "haptics": [],
+      "sources": [],
+      "skeleton": []
+    },
+    "/actions/rock": {
+      "chords": [],
+      "poses": [],
+      "haptics": [],
+      "sources": [],
+      "skeleton": []
+    },
+    "/actions/space": {
+      "chords": [],
+      "poses": [],
+      "haptics": [],
+      "sources": [
+        {
+          "path": "/user/hand/left/input/trigger",
+          "mode": "button",
+          "parameters": {
+            "click_activate_threshold": "0.1",
+            "click_deactivate_threshold": "0.05"
+          },
+          "inputs": {
+            "click": {
+              "output": "/actions/space/in/DeleterSelect"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/trigger",
+          "mode": "button",
+          "parameters": {
+            "click_activate_threshold": "0.1",
+            "click_deactivate_threshold": "0.05"
+          },
+          "inputs": {
+            "click": {
+              "output": "/actions/space/in/DeleterSelect"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/left/input/trigger",
+          "mode": "button",
+          "parameters": {
+            "click_activate_threshold": "0.95",
+            "click_deactivate_threshold": "0.9"
+          },
+          "inputs": {
+            "click": {
+              "output": "/actions/space/in/DeleterDelete"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/trigger",
+          "mode": "button",
+          "parameters": {
+            "click_activate_threshold": "0.95",
+            "click_deactivate_threshold": "0.9"
+          },
+          "inputs": {
+            "click": {
+              "output": "/actions/space/in/DeleterDelete"
+            }
+          }
+        }
+      ],
+      "skeleton": []
+    },
+    "/actions/squeezable": {
+      "chords": [],
+      "poses": [],
+      "haptics": [],
+      "sources": [],
+      "skeleton": []
+    },
+    "/actions/teleporting": {
+      "chords": [],
+      "poses": [],
+      "haptics": [],
+      "sources": [],
+      "skeleton": []
+    }
+  },
+  "controller_type": "knuckles",
+  "description": "",
+  "name": "knuckles_default"
+}

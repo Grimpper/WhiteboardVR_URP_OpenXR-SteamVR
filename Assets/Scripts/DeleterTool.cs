@@ -56,7 +56,10 @@ public class DeleterTool : MonoBehaviour
 
         if (used)
         {
-            transform.parent = null;
+            // Custom code:
+            //transform.parent = null;
+            // Custom code:
+            
             body.isKinematic = false;
 
             if (cycler == null)

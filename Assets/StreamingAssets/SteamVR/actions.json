@@ -89,6 +89,14 @@
       "name": "/actions/mixedreality/in/ExternalCamera",
       "type": "pose",
       "requirement": "optional"
+    },
+    {
+      "name": "/actions/space/in/DeleterSelect",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/space/in/DeleterDelete",
+      "type": "boolean"
     }
   ],
   "action_sets": [
@@ -106,6 +114,10 @@
     },
     {
       "name": "/actions/mixedreality",
+      "usage": "single"
+    },
+    {
+      "name": "/actions/space",
       "usage": "single"
     }
   ],

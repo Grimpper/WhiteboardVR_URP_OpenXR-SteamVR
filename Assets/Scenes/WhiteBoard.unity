@@ -3188,7 +3188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffefbea063cab884ca33e5a449e5c22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachmentFlags: 92
+  attachmentFlags: 93
   attachmentOffset: {fileID: 0}
   catchingSpeedThreshold: -1
   releaseVelocityStyle: 3
@@ -3468,6 +3468,7 @@ Transform:
   m_Children:
   - {fileID: 6051463412222649193}
   - {fileID: 4120710295769098592}
+  - {fileID: 6047177565234102830}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -19988,7 +19989,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffefbea063cab884ca33e5a449e5c22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachmentFlags: 20
+  attachmentFlags: 93
   attachmentOffset: {fileID: 6047177565234102830}
   catchingSpeedThreshold: -1
   releaseVelocityStyle: 4
@@ -20019,7 +20020,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  restoreOriginalParent: 0
+  restoreOriginalParent: 1
   onPickUp:
     m_PersistentCalls:
       m_Calls: []
@@ -20538,7 +20539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activateActionSetOnAttach:
-    actionSetPath: /actions/default
+    actionSetPath: /actions/space
   hideHandOnAttach: 0
   hideSkeletonOnAttach: 0
   hideControllerOnAttach: 1
@@ -23452,15 +23453,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6052517333554854904}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: -3.668, y: 0.971, z: 3.8998177}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -2.543645}
+  m_LocalScale: {x: 20, y: 20, z: 20}
   m_Children:
   - {fileID: 6047146518610253054}
   - {fileID: 6046777904729245964}
   - {fileID: 6049899802839230512}
   - {fileID: 6049530797093868184}
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_Father: {fileID: 3890721381437237563}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &6049470209436078890
 Transform:

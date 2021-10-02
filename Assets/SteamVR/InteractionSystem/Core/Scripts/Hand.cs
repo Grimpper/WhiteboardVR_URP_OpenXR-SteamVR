@@ -471,9 +471,11 @@ namespace Valve.VR.InteractionSystem
 
             if (attachedObject.HasAttachFlag(AttachmentFlags.ParentToHand))
             {
-                //Parent the object to the hand
-                objectToAttach.transform.parent = this.transform;
                 // Custom code: Set object to attach layer to hand layer //
+                //Parent the object to the hand
+                //objectToAttach.transform.parent = this.transform;
+                
+                objectToAttach.transform.SetParent(transform, true);
                 objectToAttach.layer = this.gameObject.layer;
                 // Custom code: Set object to attach layer to hand layer //
                 
@@ -651,8 +653,11 @@ namespace Valve.VR.InteractionSystem
 
                     if (attachedObjects[index].attachedObject != null)
                     {
-                        attachedObjects[index].attachedObject.transform.parent = parentTransform;
+                        
                         // Custom code: Restore Layer
+                        //attachedObjects[index].attachedObject.transform.parent = parentTransform;
+                        attachedObjects[index].attachedObject.transform.SetParent(parentTransform, true);
+                        
                         LayerSetter.SetLayerRecursively(attachedObjects[index].attachedObject, parentLayer);
                         // Custom code: Restore Layer
                     }

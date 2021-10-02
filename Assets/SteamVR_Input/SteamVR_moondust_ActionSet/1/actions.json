@@ -1,0 +1,29 @@
+{
+  "actions": [
+    {
+      "name": "/actions/space/in/DeleterSelect",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/space/in/DeleterDelete",
+      "type": "boolean"
+    }
+  ],
+  "action_sets": [
+    {
+      "name": "/actions/space",
+      "usage": "single"
+    }
+  ],
+  "default_bindings": [
+    {
+      "controller_type": "knuckles",
+      "binding_url": "bindings_knuckles.json"
+    }
+  ],
+  "localization": [
+    {
+      "language_tag": "en_US"
+    }
+  ]
+}
