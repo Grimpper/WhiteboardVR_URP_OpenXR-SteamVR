@@ -31,14 +31,14 @@ public class LayerSetter : MonoBehaviour
 
     private int baseLayer;
     private int altLayer;
-    private static string _altLayerTag;
+    private static string altLayerTag;
 
     void Start()
     {
         baseLayer = LayerMask.NameToLayer(setBaseLayerTo);
         altLayer =  LayerMask.NameToLayer(setAlternativeLayerTo);
 
-        _altLayerTag = alternativeTag;
+        altLayerTag = alternativeTag;
 
         SetLayerRecursively(gameObject, baseLayer, altLayer);
         
@@ -46,7 +46,7 @@ public class LayerSetter : MonoBehaviour
         {
             Debug.Log("Selected Base Layer: " + setBaseLayerTo + " (" + baseLayer + ")");
             Debug.Log("Selected Hand Layer: " + setAlternativeLayerTo + " (" + altLayer + ")");
-            Debug.Log("Selected Tag: " + _altLayerTag);
+            Debug.Log("Selected Tag: " + altLayerTag);
         }
     }
 
@@ -57,32 +57,34 @@ public class LayerSetter : MonoBehaviour
         baseLayer = LayerMask.NameToLayer(setBaseLayerTo);
         altLayer =  LayerMask.NameToLayer(setAlternativeLayerTo);
 
-        _altLayerTag = alternativeTag;
+        altLayerTag = alternativeTag;
             
         SetLayerRecursively(gameObject, baseLayer, altLayer);
     }
 
-    public static void SetLayerRecursively(GameObject obj, int desiredBaseLayer, int desiredHandLayer = -1)
+    public static void SetLayerRecursively(GameObject obj, int desiredBaseLayer, int desiredAltLayer = -1)
     {
-        if (_altLayerTag != "" && obj.CompareTag(_altLayerTag) && (desiredHandLayer >= 0 && desiredHandLayer <= 31))
+        if (altLayerTag != "" && obj.CompareTag(altLayerTag) && IsLayerValid(desiredAltLayer))
         {
-            obj.layer = desiredHandLayer;
+            obj.layer = desiredAltLayer;
             
             foreach(Transform child in obj.transform)
             {
                 // Set every child in hand to desired hand layer
-                SetLayerRecursively(child.gameObject, desiredHandLayer, desiredHandLayer);
+                SetLayerRecursively(child.gameObject, desiredAltLayer, desiredAltLayer);
             }
         }
         else
         {
-            if (desiredBaseLayer >= 0 && desiredBaseLayer <= 31) obj.layer = desiredBaseLayer;
+            if (IsLayerValid(desiredBaseLayer)) 
+                obj.layer = desiredBaseLayer;
             
             foreach(Transform child in obj.transform)
             {
-                SetLayerRecursively(child.gameObject, desiredBaseLayer, desiredHandLayer);
+                SetLayerRecursively(child.gameObject, desiredBaseLayer, desiredAltLayer);
             }
         }
     }
 
+    private static bool IsLayerValid(int layer) => layer >= 0 && layer <= 31;
 }

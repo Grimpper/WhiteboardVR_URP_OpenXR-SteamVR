@@ -197,7 +197,6 @@ namespace SteamAudio
                         break;
 
                     case BuildTarget.StandaloneLinux64:
-                    case BuildTarget.StandaloneLinuxUniversal:
                         FileUtil.CopyFileOrDirectory("Assets/Plugins/x86_64/libtbb.so.2",
                             playerDirectory + "/" + playerName + "_Data/Plugins/x86_64/libtbb.so.2");
                         FileUtil.CopyFileOrDirectory("Assets/Plugins/x86_64/libtbbmalloc.so.2",

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Assembler;
@@ -14,7 +15,6 @@ public class Dispenser : MonoBehaviour
     private Interactable interactable;
     private Interactable lastInteractable;
     private AssemblerComponent assemblerComponent;
-
 
     private void Update()
     {
@@ -74,7 +74,9 @@ public class Dispenser : MonoBehaviour
         float endTime = startTime + overTime;
 
         Vector3 initialScale = Vector3.one * 0.01f;
-        Vector3 endScale = toGrow.transform.localScale;
+        
+        float assemblerStationScaling = transform.root.lossyScale.x;
+        Vector3 endScale = toGrow.transform.localScale * assemblerStationScaling;
 
         toGrowGameObject.SetActive(true);
 
