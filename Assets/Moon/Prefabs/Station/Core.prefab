@@ -3,8 +3,7 @@
 --- !u!1 &2499394501392617028
 GameObject:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 100002, guid: dd1d7a31467e6ee4b800d4dece90ceda,
-    type: 3}
+  m_CorrespondingSourceObject: {fileID: 100002, guid: dd1d7a31467e6ee4b800d4dece90ceda, type: 3}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
@@ -28,8 +27,7 @@ GameObject:
 --- !u!4 &2499394501392617027
 Transform:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 400002, guid: dd1d7a31467e6ee4b800d4dece90ceda,
-    type: 3}
+  m_CorrespondingSourceObject: {fileID: 400002, guid: dd1d7a31467e6ee4b800d4dece90ceda, type: 3}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2499394501392617028}
@@ -44,8 +42,7 @@ Transform:
 --- !u!33 &2499394501392617024
 MeshFilter:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 3300002, guid: dd1d7a31467e6ee4b800d4dece90ceda,
-    type: 3}
+  m_CorrespondingSourceObject: {fileID: 3300002, guid: dd1d7a31467e6ee4b800d4dece90ceda, type: 3}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2499394501392617028}
@@ -53,8 +50,7 @@ MeshFilter:
 --- !u!23 &2499394501392617025
 MeshRenderer:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 2300002, guid: dd1d7a31467e6ee4b800d4dece90ceda,
-    type: 3}
+  m_CorrespondingSourceObject: {fileID: 2300002, guid: dd1d7a31467e6ee4b800d4dece90ceda, type: 3}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2499394501392617028}
@@ -225,6 +221,7 @@ MonoBehaviour:
   handFollowTransform: 0
   highlightOnHover: 1
   hideHighlight: []
+  hoverPriority: 0
 --- !u!114 &2499394501392617038
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,12 +234,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffefbea063cab884ca33e5a449e5c22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachmentFlags: 20
+  attachmentFlags: 28
   attachmentOffset: {fileID: 0}
   catchingSpeedThreshold: -1
   releaseVelocityStyle: 2
   releaseVelocityTimeOffset: -0.011
   scaleReleaseVelocity: 1.1
+  scaleReleaseVelocityThreshold: -1
+  scaleReleaseVelocityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   restoreOriginalParent: 0
   onPickUp:
     m_PersistentCalls:
