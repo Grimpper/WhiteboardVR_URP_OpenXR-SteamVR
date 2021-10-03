@@ -26,51 +26,99 @@ namespace Valve.VR.InteractionSystem
         public Transform[] antiFlip;
 
         public WhichHand defaultHand = WhichHand.Right;
+        public VectorComponent axisToFlip = VectorComponent.X;
 
-        private Vector3 initialScale;
         private Interactable interactable;
 
-        [HideInInspector]
-        public SteamVR_Input_Sources attachedHandType
+        public enum VectorComponent
         {
-            get
-            {
-                if (interactable.attachedToHand)
-                    return interactable.attachedToHand.handType;
-                else
-                    return SteamVR_Input_Sources.Any;
-            }
+            X,
+            Y,
+            Z
         }
+
+        private bool isFlipped;
+        
+        [HideInInspector]
+        public SteamVR_Input_Sources attachedHandType => interactable.attachedToHand
+            ? interactable.attachedToHand.handType
+            : SteamVR_Input_Sources.Any;
 
         private void Start()
         {
-            initialScale = transform.localScale;
+            // Custom code: Fix transform scaling
+            //initialScale = transform.localScale;
+            // Custom code: Fix transform scaling
+            
             interactable = GetComponent<Interactable>();
         }
 
-        private void Update()
+        /*private void Update()
         {
-            if (interactable.attachedToHand)
+            if (!interactable.attachedToHand) return;
+
+            Vector3 flipScale = transform.localScale;
+
+            // Custom code: Fix transform scaling
+            if (attachedHandType == SteamVR_Input_Sources.RightHand && defaultHand == WhichHand.Right ||
+                attachedHandType == SteamVR_Input_Sources.LeftHand && defaultHand == WhichHand.Left)
             {
-                Vector3 flipScale = initialScale;
-                if ((attachedHandType == SteamVR_Input_Sources.RightHand && defaultHand == WhichHand.Right) || (attachedHandType == SteamVR_Input_Sources.LeftHand && defaultHand == WhichHand.Left))
-                {
-                    flipScale.x *= 1;
-                    for (int transformIndex = 0; transformIndex < antiFlip.Length; transformIndex++)
-                    {
-                        antiFlip[transformIndex].localScale = new Vector3(1, 1, 1);
-                    }
-                }
-                else
-                {
-                    flipScale.x *= -1;
-                    for (int transformIndex = 0; transformIndex < antiFlip.Length; transformIndex++)
-                    {
-                        antiFlip[transformIndex].localScale = new Vector3(-1, 1, 1);
-                    }
-                }
-                transform.localScale = flipScale;
+                flipScale.x *= 1;
             }
+            else
+            {
+                flipScale.x *= -1;
+                
+                for (int i = 0; i < antiFlip.Length; i++)
+                {
+                    FlipTransform(ref antiFlip[i], VectorComponent.X);
+                }
+            }
+            // Custom code: Fix transform scaling
+            
+            transform.localScale = flipScale;
+        }*/
+
+        public void FlipAxis()
+        {
+            switch (isFlipped)
+            {
+                case false when !interactable.attachedToHand:
+                case false when (attachedHandType == SteamVR_Input_Sources.RightHand && defaultHand == WhichHand.Right ||
+                                 attachedHandType == SteamVR_Input_Sources.LeftHand && defaultHand == WhichHand.Left):
+                    return;
+            }
+
+            isFlipped = true;
+
+            Vector3 flipScale = transform.localScale;
+            
+            flipScale.x *= -1;
+            
+            for (int i = 0; i < antiFlip.Length; i++)
+                FlipTransform(ref antiFlip[i], axisToFlip);
+
+            transform.localScale = flipScale;
+        }
+
+        private void FlipTransform(ref Transform trans, VectorComponent axisToFlip)
+        {
+            Vector3 transformScale = trans.localScale;
+
+            switch (axisToFlip)
+            {
+                case VectorComponent.X:
+                    transformScale.x *= -1;
+                    break;
+                case VectorComponent.Y:
+                    transformScale.y *= -1;
+                    break;
+                case VectorComponent.Z:
+                    transformScale.z *= -1;
+                    break;
+            }
+
+            trans.localScale = transformScale;
         }
     }
 }
