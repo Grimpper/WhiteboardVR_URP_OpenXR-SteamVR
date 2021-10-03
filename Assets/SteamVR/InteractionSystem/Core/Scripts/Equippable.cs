@@ -37,7 +37,7 @@ namespace Valve.VR.InteractionSystem
             Z
         }
 
-        private bool isFlipped;
+        private bool isFlipped = false;
         
         [HideInInspector]
         public SteamVR_Input_Sources attachedHandType => interactable.attachedToHand
@@ -84,12 +84,18 @@ namespace Valve.VR.InteractionSystem
             switch (isFlipped)
             {
                 case false when !interactable.attachedToHand:
-                case false when (attachedHandType == SteamVR_Input_Sources.RightHand && defaultHand == WhichHand.Right ||
-                                 attachedHandType == SteamVR_Input_Sources.LeftHand && defaultHand == WhichHand.Left):
+                case false when attachedHandType == SteamVR_Input_Sources.RightHand && defaultHand == WhichHand.Right ||
+                                attachedHandType == SteamVR_Input_Sources.LeftHand && defaultHand == WhichHand.Left:
                     return;
+                
+                case false:
+                    isFlipped = true;
+                    break;
+                
+                case true:
+                    isFlipped = false;
+                    break;
             }
-
-            isFlipped = true;
 
             Vector3 flipScale = transform.localScale;
             
@@ -101,11 +107,11 @@ namespace Valve.VR.InteractionSystem
             transform.localScale = flipScale;
         }
 
-        private void FlipTransform(ref Transform trans, VectorComponent axisToFlip)
+        private void FlipTransform(ref Transform trans, VectorComponent flipAxis)
         {
             Vector3 transformScale = trans.localScale;
 
-            switch (axisToFlip)
+            switch (flipAxis)
             {
                 case VectorComponent.X:
                     transformScale.x *= -1;

@@ -19716,7 +19716,7 @@ MonoBehaviour:
   - {fileID: 5829309400377408096}
   - {fileID: 6046729877580613356}
   - {fileID: 6050009658541326986}
-  defaultHand: 0
+  defaultHand: 1
   axisToFlip: 0
 --- !u!114 &5939214173081758733
 MonoBehaviour:
