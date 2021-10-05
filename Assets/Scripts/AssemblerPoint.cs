@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,6 +23,10 @@ namespace Assembler
         {
             SphereCollider sphereCollider = gameObject.AddComponent<SphereCollider>();
             sphereCollider.radius = radius;
+            
+            // Custom code: fix collision between component attach points and themselves
+            sphereCollider.isTrigger = true;
+            // Custom code: fix collision between component attach points and themselves
         }
         
         private void Update()
