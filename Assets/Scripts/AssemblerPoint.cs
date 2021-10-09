@@ -1,53 +1,44 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assembler
+namespace Assembler 
 {
     public class AssemblerPoint : MonoBehaviour
     {
         public float radius;
-
-        public AssemblerPoint connected;
-
-        public bool isConnected;
-
+        public AssemblerPoint connectedPoint;
+        public bool connected;
         public AssemblerComponent comp;
-
         public int ID;
-
         public bool connectable;
-
 
         private void Start()
         {
             SphereCollider sphereCollider = gameObject.AddComponent<SphereCollider>();
             sphereCollider.radius = radius;
-            
-            // Custom code: fix collision between component attach points and themselves
-            sphereCollider.isTrigger = true;
-            // Custom code: fix collision between component attach points and themselves
-        }
-        
-        private void Update()
-        {
-            if (isConnected)
-            {
-                if (connected.connected != this)
-                {
-                    DetachPoint();
-                }
-                if(connected== null)
-                {
-                    DetachPoint();
-                }
-            }
         }
 
+        private void Update()
+        {
+            if (!connected) return;
+            
+            if (connectedPoint.connectedPoint != this)
+            {
+                DetachPoint();
+            }
+
+            if (connectedPoint == null)
+            {
+                DetachPoint();
+            }
+        }
+        
         public void DetachPoint()
         {
-            connected = null;
-            isConnected = false;
+            connectedPoint = null;
+            connected = false;
         }
 
         public bool CheckForPoints(out PointHitCheck hit)
@@ -55,20 +46,22 @@ namespace Assembler
             hit = null;
 
             Collider[] colliders = Physics.OverlapSphere(transform.position, radius * 2);
-            foreach (Collider collider in colliders)
+            foreach (Collider col in colliders)
             {
-                AssemblerPoint point = collider.GetComponent<AssemblerPoint>();
-                if (point != null && point.isConnected == false) 
-                {
-                    if (point.ID == ID && point.comp != comp && (point.comp.connected || point.comp.core)) //attach conditions
-                    {
-                        hit = new PointHitCheck(Vector3.Distance(transform.position, point.transform.position), point);
-                        return true;
-                    }
-                }
+                AssemblerPoint point = col.GetComponent<AssemblerPoint>();
+                if (point == null || point.connected || !CheckAttachConditions(point)) continue;
+                
+                float hitDistance = Vector3.Distance(transform.position, point.transform.position);
+                hit = new PointHitCheck(hitDistance, point);
+
+                return true;
             }
 
             return false;
         }
+
+        private bool CheckAttachConditions(in AssemblerPoint point)
+            => point.ID == ID && point.comp != comp && (point.comp.connected || point.comp.core);
+        // same ID          not itself        is a connected snapPoint or the coreComponent
     }
 }

@@ -26,7 +26,7 @@ public class StationInteractionSFX : MonoBehaviour
         interactable.onAttachedToHand += Interactable_onAttachedToHand;
         interactable.onDetachedFromHand += Interactable_onDetachedFromHand;
         if(assembler != null)
-            assembler.onAttached += Assembler_onAttached;
+            assembler.onAttach += Assembler_onAttached;
     }
 
     private void Interactable_onDetachedFromHand(Hand hand)

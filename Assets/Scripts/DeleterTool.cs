@@ -30,16 +30,13 @@ public class DeleterTool : MonoBehaviour
     public SteamVR_Action_Boolean actionDelete;
 
 
-    private Rigidbody body;
+    private Rigidbody rb;
     private IEnumerator cycler;
 
-    private AssemblerComponent comp;
-    private AssemblerComponent compb;
+    private AssemblerComponent hitAssemblerComponent;
 
     private Transform hitTr;
     private Interactable interactable;
-
-    private bool used;
 
     private Vector3 lockedPosition;
 
@@ -47,20 +44,18 @@ public class DeleterTool : MonoBehaviour
     private void Start()
     {
         interactable = GetComponent<Interactable>();
-        body = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
-        used = interactable.attachedToHand;
-
-        if (used)
+        if (interactable.attachedToHand)
         {
             // Custom code:
             //transform.parent = null;
             // Custom code:
             
-            body.isKinematic = false;
+            rb.isKinematic = false;
 
             if (cycler == null)
             {
@@ -69,8 +64,9 @@ public class DeleterTool : MonoBehaviour
             }
 
             float dist = 200;
-            RaycastHit hit;
-            bool didHit = Physics.Raycast(aimer.transform.position, aimer.transform.forward, out hit);
+            bool didHit = Physics.Raycast(aimer.transform.position, aimer.transform.forward, 
+                out RaycastHit hit);
+            
             if (didHit)
             {
                 dist = hit.distance;
@@ -78,67 +74,65 @@ public class DeleterTool : MonoBehaviour
 
             confirmer.SetActive(status == DeleterStatus.Locked);
             
-            if (status == DeleterStatus.Aiming)
+            switch (status)
             {
-                laserbeam.transform.rotation = aimer.transform.rotation;
-                if (didHit)
-                {
-                    if (hit.collider.GetComponentInParent<AssemblerComponent>())
+                case DeleterStatus.Aiming:
+                    laserbeam.transform.rotation = aimer.transform.rotation;
+                    hitAssemblerComponent = hit.collider.GetComponentInParent<AssemblerComponent>();
+                
+                    switch (didHit)
                     {
-                        if (hit.collider.GetComponentInParent<AssemblerComponent>().enabled)
-                        {
-                            comp = hit.collider.GetComponentInParent<AssemblerComponent>();
+                        case true when (hitAssemblerComponent != null && hitAssemblerComponent.enabled):
                             hitTr = hit.transform;
                             lockedPosition = hit.transform.InverseTransformPoint(hit.point);
-                            comp.PreviewOneDelete();
-                        }
+                            hitAssemblerComponent.PreviewDelete();
+                            break;
+                    
+                        case false:
+                            hitAssemblerComponent = null;
+                            break;
                     }
-                }
-                else
+
+                    laserbeam.gameObject.SetActive(false);
+                    aimer.gameObject.SetActive(true);
+                    aimer.SetPosition(1, Vector3.forward * dist / aimer.transform.lossyScale.z);
+                    break;
+                
+                case DeleterStatus.Locked:
                 {
-                    comp = null;
+                    Vector3 worldLock = hitTr.transform.TransformPoint(lockedPosition);
+                    laserbeam.gameObject.SetActive(true);
+                    laserbeam.transform.rotation = Quaternion.LookRotation(worldLock - laserbeam.transform.position);
+
+                    laserbeam.SetPosition(1, laserbeam.transform.InverseTransformPoint(worldLock));
+                    aimer.gameObject.SetActive(false);
+                    hitAssemblerComponent.PreviewDelete();
+
+                    if (Vector3.Angle(aimer.transform.forward, worldLock - laserbeam.transform.position) > 30) // angle to break lock
+                    {
+                        status = DeleterStatus.Aiming; //reset
+                        au.PlayOneShot(au_error);
+                    }
+
+                    break;
                 }
-
-                laserbeam.gameObject.SetActive(false);
-                aimer.gameObject.SetActive(true);
-                aimer.SetPosition(1, Vector3.forward * dist / aimer.transform.lossyScale.z);
-
-            }
-            
-            if (status == DeleterStatus.Locked)
-            {
-                Vector3 worldLock = hitTr.transform.TransformPoint(lockedPosition);
-                laserbeam.gameObject.SetActive(true);
-                laserbeam.transform.rotation = Quaternion.LookRotation(worldLock - laserbeam.transform.position);
-
-                laserbeam.SetPosition(1, laserbeam.transform.InverseTransformPoint(worldLock));
-                aimer.gameObject.SetActive(false);
-                comp.PreviewDelete();
-
-                if (Vector3.Angle(aimer.transform.forward, worldLock - laserbeam.transform.position) > 30) // angle to break lock
-                {
-                    status = DeleterStatus.Aiming; //reset
-                    au.PlayOneShot(au_error);
-                }
-            }
-
-            if (status == DeleterStatus.Zapping)
-            {
-                laserbeam.gameObject.SetActive(true);
-                laserbeam.SetPosition(1, Vector3.forward * dist / aimer.transform.lossyScale.z);
-                aimer.gameObject.SetActive(false);
-            }
-            
-            if (status == DeleterStatus.Cancelling)
-            {
-                laserbeam.gameObject.SetActive(true);
-                laserbeam.SetPosition(1, Vector3.forward * dist / aimer.transform.lossyScale.z);
-                aimer.gameObject.SetActive(false);
+                
+                case DeleterStatus.Zapping:
+                    laserbeam.gameObject.SetActive(true);
+                    laserbeam.SetPosition(1, Vector3.forward * dist / aimer.transform.lossyScale.z);
+                    aimer.gameObject.SetActive(false);
+                    break;
+                
+                case DeleterStatus.Cancelling:
+                    laserbeam.gameObject.SetActive(true);
+                    laserbeam.SetPosition(1, Vector3.forward * dist / aimer.transform.lossyScale.z);
+                    aimer.gameObject.SetActive(false);
+                    break;
             }
         }
         else
         {
-            comp = null;
+            hitAssemblerComponent = null;
             if (cycler != null)
             {
                 StopCoroutine(cycler);
@@ -162,7 +156,7 @@ public class DeleterTool : MonoBehaviour
                 {
                     if (actionSelect.GetState(interactable.attachedToHand.handType))
                     {
-                        if (comp != null)
+                        if (hitAssemblerComponent != null)
                         {
                             status = DeleterStatus.Locked; // lock on
                             au.PlayOneShot(au_select);
@@ -183,8 +177,10 @@ public class DeleterTool : MonoBehaviour
                 {
                     if (actionDelete.GetState(interactable.attachedToHand.handType))
                     {
-                        comp.Delete();
-                        comp = null;
+                        if (hitAssemblerComponent)
+                            hitAssemblerComponent.Delete();
+                        
+                        hitAssemblerComponent = null;
                         status = 0; // reset
                         au.PlayOneShot(au_zap);
                     }
@@ -201,6 +197,7 @@ public class DeleterTool : MonoBehaviour
                     SetColor(zapTime);
                     yield return null;
                 }
+                
                 status = DeleterStatus.Aiming; // reset
                 yield return null;
                 SetColor(1);
@@ -215,6 +212,7 @@ public class DeleterTool : MonoBehaviour
                     SetColor(cancelTime);
                     yield return null;
                 }
+                
                 status = DeleterStatus.Aiming; //reset
                 yield return null;
                 SetColor(1);
@@ -231,8 +229,10 @@ public class DeleterTool : MonoBehaviour
     {
         Gradient gradient = new Gradient();
         gradient.SetKeys(
-            new GradientColorKey[] { new GradientColorKey(Color.white * f, 0.0f), new GradientColorKey(Color.white * f, 1.0f) },
-            new GradientAlphaKey[] { new GradientAlphaKey(1, 0.0f), new GradientAlphaKey(1, 1.0f) }
+            new GradientColorKey[] { new GradientColorKey(Color.white * f, 0.0f), 
+                new GradientColorKey(Color.white * f, 1.0f) },
+            new GradientAlphaKey[] { new GradientAlphaKey(1, 0.0f), 
+                new GradientAlphaKey(1, 1.0f) }
         );
         laserbeam.colorGradient = gradient;
     }

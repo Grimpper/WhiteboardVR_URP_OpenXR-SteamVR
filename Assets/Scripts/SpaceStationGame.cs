@@ -18,7 +18,7 @@ public class SpaceStationGame : MonoBehaviour
 
             foreach (AssemblerPoint point in core.pointColliders)
             {
-                if (point.isConnected)
+                if (point.connected)
                 {
                     attach = true;
                 }

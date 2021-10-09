@@ -1,23 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using Valve.VR.InteractionSystem;
-
+using Random = UnityEngine.Random;
 
 namespace Assembler
 {
     public class AssemblerComponent : MonoBehaviour
     {
-        [System.Serializable]
-        public class snapPoint
+        [Serializable]
+        public class SnapPoint
         {
             public Vector3 point;
             public Vector3 normal;
 
             public int ID;
 
-            public snapPoint(Vector3 p, Vector3 n, int i)
+            public SnapPoint(Vector3 p, Vector3 n, int i)
             {
                 point = p;
                 normal = n.normalized;
@@ -25,79 +25,68 @@ namespace Assembler
             }
         }
 
-        public static bool dismantle;
+        public bool dismantle;
 
-        public static AssemblerComponent coreComp;
+        private static AssemblerComponent coreComp;
 
         public bool faker;
+        public Material fakerSky;
 
         [Tooltip("Is this part the center that cannot be destroyed?")]
         public bool core;
 
-        public snapPoint[] points;
+        public SnapPoint[] points;
 
-        [HideInInspector]
-        public AssemblerPoint[] pointColliders;
-
-        [HideInInspector]
-        public bool connected;
-
-        public int treeDist; // distance from core on connection tree
+        [HideInInspector] public AssemblerPoint[] pointColliders;
+        
+        [HideInInspector] public bool connected;
 
         public GameObject previewHolo;
 
-        public Material fakerSky;
-
+        public int distanceFromCore;
 
         private Interactable interactable;
         private Rigidbody rb;
-        private float rad = 0.3f;
+        private float radius = 0.3f;
 
-        private bool wasgrab;
+        private bool wasGrab;
 
+        private AssemblerPoint mountPoint;
         private AssemblerPoint attachPoint;
-        private AssemblerPoint m_attachPt;
 
         private Hand holdingHand;
+        private static readonly int Open = Animator.StringToHash("Open");
 
         public delegate void OnAttachedDelegate(Hand hand);
 
-        public event OnAttachedDelegate onAttached;
+        public event OnAttachedDelegate onAttach;
 
         private void Start()
         {
-            if (faker)
-                return;
-
             if (previewHolo)
-            {
                 previewHolo.SetActive(true);
-            }
 
             rb = GetComponent<Rigidbody>();
+            
             pointColliders = new AssemblerPoint[points.Length];
             for (int i = 0; i < points.Length; i++)
             {
                 GameObject g = new GameObject("pt_" + i);
-                pointColliders[i] = (AssemblerPoint)g.AddComponent<AssemblerPoint>();
-                pointColliders[i].radius = rad;
+                pointColliders[i] = g.AddComponent<AssemblerPoint>();
+                pointColliders[i].radius = radius;
                 pointColliders[i].transform.parent = transform;
                 pointColliders[i].transform.position = transform.TransformPoint(points[i].point);
-                pointColliders[i].transform.rotation = Quaternion.LookRotation(transform.TransformDirection(points[i].normal), transform.up);
+                pointColliders[i].transform.rotation =
+                    Quaternion.LookRotation(transform.TransformDirection(points[i].normal), transform.up);
                 pointColliders[i].comp = this;
                 pointColliders[i].ID = points[i].ID;
-                pointColliders[i].gameObject.layer = 1; // set it to transparentFX layer, so they don't collide with eachother
+                pointColliders[i].gameObject.layer = LayerMask.NameToLayer("TransparentFX"); // to avoid collisions
             }
-
 
             if (core)
-            {
                 coreComp = this;
-            }
             else
-            {
                 interactable = GetComponent<Interactable>();
-            }
         }
 
         private void Update()
@@ -106,160 +95,190 @@ namespace Assembler
                 return;
 
             bool detached = true;
-            for (int pointIndex = 0; pointIndex < points.Length; pointIndex++)
+            for (int i = 0; i < points.Length; i++)
             {
                 if (core == false)
                 {
-                    pointColliders[pointIndex].connectable = (rb == null);
+                    pointColliders[i].connectable = rb == null;
 
-                    if (pointColliders[pointIndex].connected)
+                    if (pointColliders[i].connected)
                         detached = false;
                 }
                 else
                 {
                     detached = false;
-                    pointColliders[pointIndex].connectable = true;
+                    pointColliders[i].connectable = true;
                 }
-
             }
 
             if (core == false)
             {
-                if (detached)
-                {
-                    if (connected)
-                        Detach();
-                }
+                if (detached && connected) 
+                    Detach();
 
-                if (interactable.attachedToHand != null) // If i'm being held
+                if (interactable.attachedToHand != null) // If being held
                 {
                     holdingHand = interactable.attachedToHand;
 
-                    if (connected)
-                    {
-                        if (dismantle)
-                        {
-                            Detach();
-                        }
-                    }
-
-                    rb.isKinematic = false;
-                    PointHitCheck[] hits = new PointHitCheck[points.Length];
-                    for (int i = 0; i < points.Length; i++)
-                    {
-                        PointHitCheck hit;
-                        if (pointColliders[i].CheckForPoints(out hit)) // check if each point is touching another object's
-                        {
-                            hits[i] = (hit);
-                        }
-                    }
-                    attachPoint = FindNearest(hits);
-                    if (attachPoint != null)
-                    {
-                        RenderSnap();
-                    }
+                    if (connected && dismantle)
+                        Detach();
                 }
-                else
+
+                rb.isKinematic = false;
+                PointHitCheck[] hits = new PointHitCheck[points.Length];
+
+                for (int i = 0; i < points.Length; i++)
                 {
-                    if (wasgrab)
-                    {
-                        if (attachPoint != null)
-                        {
-                            Attach();
-                            attachPoint = null;
-                        }
-                    }
+                    PointHitCheck hit;
+                    if (pointColliders[i].CheckForPoints(out hit)) // Check if each point is touching another object's
+                        hits[i] = hit;
                 }
 
-                wasgrab = interactable.attachedToHand;
+                mountPoint = FindNearest(hits);
+
+                if (mountPoint != null)
+                    RenderSnap();
             }
+            else if (wasGrab && mountPoint != null)
+            {
+                Attach();
+                mountPoint = null;
+            }
+
+            wasGrab = interactable.attachedToHand;
         }
 
         private void Attach()
         {
-            onAttached.Invoke(holdingHand);
+            onAttach?.Invoke(holdingHand);
 
             if (previewHolo)
-            {
                 previewHolo.SetActive(false);
-            }
-            if (GetComponent<Animator>())
-            {
-                GetComponent<Animator>().SetTrigger("Open");
-            }
+            
+            GetComponent<Animator>()?.SetTrigger(Open);
 
             connected = true;
 
             Transform[] allTransforms = interactable.GetComponentsInChildren<Transform>(true);
             GameObject[] allGameObjects = new GameObject[allTransforms.Length];
-            for (int transformIndex = 0; transformIndex < allTransforms.Length; transformIndex++)
-                allGameObjects[transformIndex] = allTransforms[transformIndex].gameObject;
+
+            for (int i = 0; i < allTransforms.Length; i++)
+                allGameObjects[i] = allTransforms[i].gameObject;
 
             interactable.hideHighlight = allGameObjects;
 
             transform.parent = coreComp.transform;
-            treeDist = attachPoint.comp.treeDist + 1;
+            distanceFromCore = mountPoint.comp.distanceFromCore + 1;
 
             SnapIn(transform);
 
-            attachPoint.isConnected = true;
-            attachPoint.connected = m_attachPt;
+            mountPoint.connected = true;
+            mountPoint.connectedPoint = attachPoint;
 
-            m_attachPt.isConnected = true;
-            m_attachPt.connected = attachPoint;
+            attachPoint.connected = true;
+            attachPoint.connectedPoint = mountPoint;
         }
 
         public void Detach()
         {
             if (previewHolo)
-            {
                 previewHolo.SetActive(true);
-            }
 
-            if (core == false)
+            if (core) return;
+            
+            rb.isKinematic = false;
+            connected = false;
+            
+            for (int i = 0; i < points.Length; i++)
             {
-                rb.isKinematic = false;
-                connected = false;
-                for (int pointIndex = 0; pointIndex < points.Length; pointIndex++)
+                if (pointColliders[i].connected)
                 {
-                    if (pointColliders[pointIndex].isConnected)
+                    if (pointColliders[i].connectedPoint.comp.distanceFromCore > distanceFromCore) 
+                        // If another component will be detached from the core, start a chain reaction
                     {
-                        if (pointColliders[pointIndex].connected.comp.treeDist > treeDist)// check if another component will be detached from the core. If so, start a chain reaction
-                        {
-                            pointColliders[pointIndex].connected.comp.Detach();
-                        }
+                        pointColliders[i].connectedPoint.comp.Detach();
                     }
-
-                    //detach my own points
-                    pointColliders[pointIndex].DetachPoint();
                 }
-
-                float rvel = 0.5f;
-                rb.velocity = new Vector3(Random.Range(-rvel, rvel), Random.Range(-rvel, rvel), Random.Range(-rvel, rvel));
-
-                float ra = 20;
-                rb.angularVelocity = new Vector3(Random.Range(-ra, ra), Random.Range(-ra, ra), Random.Range(-ra, ra));
+                    
+                pointColliders[i].DetachPoint();
             }
+
+            const float rVel = 0.5f;
+            rb.velocity = 
+                new Vector3(Random.Range(-rVel, rVel), Random.Range(-rVel, rVel), Random.Range(-rVel, rVel));
+            
+            float rA = 20;
+            rb.angularVelocity = new Vector3(Random.Range(-rA, rA), Random.Range(-rA, rA), Random.Range(-rA, rA));
+        }
+
+        private void SnapIn(Transform snapTransform, bool doSnap = true)
+        {
+            Transform tempObj = new GameObject().transform;
+            tempObj.position = snapTransform.position;
+            tempObj.rotation = snapTransform.rotation;
+            tempObj.parent = mountPoint.transform;
+            
+            Vector3 hackyRounding = tempObj.localEulerAngles;
+            hackyRounding.x = Mathf.Round(hackyRounding.x / 90) * 90;
+            hackyRounding.y = Mathf.Round(hackyRounding.y / 90) * 90;
+            hackyRounding.z = Mathf.Round(hackyRounding.z / 90) * 90;
+            tempObj.localEulerAngles = hackyRounding;
+
+            snapTransform.eulerAngles = tempObj.eulerAngles;
+            
+            Destroy(tempObj.gameObject);
+
+            Vector3 posDiff = mountPoint.transform.position - attachPoint.transform.position;
+            snapTransform.position += posDiff;
+
+            if (!doSnap) return;
+            
+            DestroyImmediate(interactable.GetComponent<Throwable>());
+            DestroyImmediate(interactable.GetComponent<VelocityEstimator>());
+            DestroyImmediate(interactable.GetComponent<Rigidbody>());
+
+            Rigidbody parentRigidbody = snapTransform.parent.GetComponentInParent<Rigidbody>();
+
+            Joint[] joints = snapTransform.GetComponentsInChildren<Joint>();
+            foreach (Joint joint in joints)
+            {
+                joint.GetComponent<Rigidbody>().rotation = snapTransform.rotation;
+                joint.connectedBody = parentRigidbody;
+                joint.autoConfigureConnectedAnchor = false;
+                joint.anchor = Vector3.zero;
+                joint.connectedAnchor = parentRigidbody.transform.InverseTransformPoint(joint.transform.position);
+
+                StartCoroutine(DoSetBreakForce(joint));
+            }
+                
+            Destroy(interactable);
+        }
+
+        private IEnumerator DoSetBreakForce(Joint joint)
+        {
+            yield return new WaitForSeconds(0.1f);
+
+            if (joint != null)
+                joint.breakForce = 2000000f;
         }
 
         public void Delete()
         {
             if (faker == false)
             {
-                for (int pointIndex = 0; pointIndex < points.Length; pointIndex++)
+                for (int i = 0; i < points.Length; i++)
                 {
-                    if (pointColliders[pointIndex].isConnected)
+                    if (!pointColliders[i].connected) continue;
+                    
+                    if (pointColliders[i].connectedPoint.comp.distanceFromCore > distanceFromCore) 
+                        // If another component will be detached from the core, start a chain reaction
                     {
-                        if (pointColliders[pointIndex].connected.comp.treeDist > treeDist)// check if another component will be detached from the core. If so, start a chain reaction
-                        {
-                            pointColliders[pointIndex].connected.comp.Delete();
-                        }
+                        pointColliders[i].connectedPoint.comp.Delete();
                     }
                 }
+
                 if (core == false)
-                {
                     Destroy(gameObject);
-                }
             }
             else
             {
@@ -267,33 +286,21 @@ namespace Assembler
                 {
                     RenderSettings.skybox = fakerSky;
                 }
-
+                
                 Destroy(gameObject);
             }
         }
 
-        private static Material previewDelete;
+        private static Material previewDeleteSmall;
+
         public void PreviewDelete()
         {
-            if (previewDelete == null)
-                previewDelete = (Material)Resources.Load("PreviewDelete", typeof(Material));
+            previewDeleteSmall ??= (Material)Resources.Load("PreviewDelete", typeof(Material));
 
             foreach (MeshFilter mesh in GetMeshesUp())
             {
-                Matrix4x4 matrix = Matrix4x4.TRS(mesh.transform.position, mesh.transform.rotation, mesh.transform.lossyScale);
-                Graphics.DrawMesh(mesh.mesh, matrix, previewDelete, 0);
-            }
-        }
-
-        private static Material previewDeleteSmall;
-        public void PreviewOneDelete()
-        {
-            if (previewDeleteSmall == null)
-                previewDeleteSmall = (Material)Resources.Load("PreviewDeleteSmall", typeof(Material));
-
-            foreach (MeshFilter mesh in GetComponentsInChildren<MeshFilter>())
-            {
-                Matrix4x4 matrix = Matrix4x4.TRS(mesh.transform.position, mesh.transform.rotation, mesh.transform.lossyScale);
+                Matrix4x4 matrix = Matrix4x4.TRS(mesh.transform.position, mesh.transform.rotation,
+                    mesh.transform.lossyScale);
                 Graphics.DrawMesh(mesh.mesh, matrix, previewDeleteSmall, 0);
             }
         }
@@ -310,216 +317,65 @@ namespace Assembler
 
             for (int i = 0; i < points.Length; i++)
             {
-                if (pointColliders[i].isConnected)
+                if (!pointColliders[i].connected) continue;
+                
+                if (pointColliders[i].connectedPoint.comp.distanceFromCore > distanceFromCore)// check if another component will be detached from the core. If so, start a chain reaction
                 {
-                    if (pointColliders[i].connected.comp.treeDist > treeDist)// check if another component will be detached from the core. If so, start a chain reaction
-                    {
-                        meshes.AddRange(pointColliders[i].connected.comp.GetMeshesUp());
-
-                    }
+                    meshes.AddRange(pointColliders[i].connectedPoint.comp.GetMeshesUp());
                 }
             }
 
             return meshes;
         }
 
-        public List<GameObject> GetObjectsUp()
-        {
-            List<GameObject> pointList = new List<GameObject>();
-
-            for (int pointIndex = 0; pointIndex < points.Length; pointIndex++)
-            {
-                if (pointColliders[pointIndex].isConnected)
-                {
-                    if (pointColliders[pointIndex].connected.comp.treeDist > treeDist) // check if another component will be detached from the core. If so, start a chain reaction
-                    {
-                        pointList.Add(pointColliders[pointIndex].connected.comp.gameObject);
-                        pointList.AddRange(pointColliders[pointIndex].connected.comp.GetObjectsUp());
-                    }
-                }
-            }
-
-            return pointList;
-        }
-
         private AssemblerPoint FindNearest(PointHitCheck[] hits)
         {
             AssemblerPoint nearestPoint = null;
             float closestDistance = Mathf.Infinity;
-            for (int pointIndex = 0; pointIndex < points.Length; pointIndex++)
+
+            for (int i = 0; i < points.Length; i++)
             {
-                if (hits[pointIndex] != null)
-                {
-                    if (hits[pointIndex].dist < closestDistance)
-                    {
-                        closestDistance = hits[pointIndex].dist;
-                        nearestPoint = hits[pointIndex].point;
-                        m_attachPt = pointColliders[pointIndex];
-                    }
-                }
+                if (hits[i] == null || hits[i].dist > closestDistance) continue;
+                
+                closestDistance = hits[i].dist;
+                nearestPoint = hits[i].point;
+                attachPoint = pointColliders[i];
             }
 
             return nearestPoint;
         }
 
         private static Material previewMaterial;
+
         private void RenderSnap()
         {
-            Vector3 oldpos = transform.position;
-            Quaternion oldrot = transform.rotation;
-
+            Vector3 oldPos = transform.position;
+            Quaternion oldRot = transform.rotation;
+            
             SnapIn(transform, false);
 
-            if (previewMaterial == null)
-                previewMaterial = (Material)Resources.Load("PreviewHologram", typeof(Material));
+            previewMaterial ??= (Material)Resources.Load("PreviewHologram", typeof(Material));
 
             Matrix4x4 matrix = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
             Graphics.DrawMesh(GetComponent<MeshFilter>().mesh, matrix, previewMaterial, 0);
 
-            transform.position = oldpos;
-            transform.rotation = oldrot;
-        }
-
-        private void SnapIn(Transform snapTransform, bool doSnap = true)
-        {
-            Transform tempObject = new GameObject().transform;
-            tempObject.position = snapTransform.position;
-            tempObject.rotation = snapTransform.rotation;
-            tempObject.parent = attachPoint.transform;
-
-            Vector3 hackyRounding = tempObject.localEulerAngles;
-            hackyRounding.x = Mathf.Round(hackyRounding.x / 90) * 90;
-            hackyRounding.y = Mathf.Round(hackyRounding.y / 90) * 90;
-            hackyRounding.z = Mathf.Round(hackyRounding.z / 90) * 90;
-            tempObject.localEulerAngles = hackyRounding;
-
-            snapTransform.eulerAngles = tempObject.eulerAngles;
-
-            Destroy(tempObject.gameObject);
-            
-            Vector3 pDiff = attachPoint.transform.position - m_attachPt.transform.position;
-            snapTransform.position += pDiff;
-
-            if (doSnap)
-            {
-                DestroyImmediate(interactable.GetComponent<Throwable>());
-                DestroyImmediate(interactable.GetComponent<VelocityEstimator>());
-                DestroyImmediate(interactable.GetComponent<Rigidbody>());
-
-                Rigidbody parentRigidbody = snapTransform.parent.GetComponentInParent<Rigidbody>();
-
-                var joints = snapTransform.GetComponentsInChildren<Joint>();
-                foreach (var joint in joints)
-                {
-                    joint.GetComponent<Rigidbody>().rotation = snapTransform.rotation;
-                    joint.connectedBody = parentRigidbody;
-                    joint.autoConfigureConnectedAnchor = false;
-                    joint.anchor = Vector3.zero;
-                    joint.connectedAnchor = parentRigidbody.transform.InverseTransformPoint(joint.transform.position);
-                    StartCoroutine(DoSetBreakForce(joint));
-                }
-
-                Destroy(interactable);
-
-                //Interactable item = t.GetComponentInParent<Interactable>();
-                //item.UpdateColliders(); //give the parent this item's colliders
-            }
-        }
-
-        /*
-        private void SnapIn(Transform snapTransform, bool doSnap = true)
-        {
-            Vector3 initialPosition = snapTransform.position;
-            Quaternion initialRotation = snapTransform.rotation;
-
-            Transform tempObject = new GameObject().transform;
-            Transform snapParent = snapTransform.parent;
-
-
-            tempObject.rotation = m_attachPt.transform.rotation;
-            Quaternion tempR = tempObject.rotation;
-            snapTransform.parent = tempObject;
-            tempObject.rotation = Quaternion.LookRotation(-attachPoint.transform.forward);
-
-            Quaternion[] angs = new Quaternion[4]; // rotate by 90 degree increments to see which is closest to correct angle
-            for (int i = 0; i < 4; i++)
-            {
-                angs[i] = tempObject.rotation;
-                tempObject.Rotate(attachPoint.transform.forward * 90, Space.World);
-            }
-
-            float angClose = Mathf.Infinity;
-            int closest = 0;
-
-            for (int i = 0; i < 4; i++)
-            {
-                float a = Vector3.Angle(angs[i] * Vector3.right, tempR * Vector3.right);
-                if (a < angClose)
-                {
-                    closest = i;
-                    angClose = a;
-                }
-            }
-
-            tempObject.rotation = angs[closest];
-
-            snapTransform.parent = snapParent;
-            Destroy(tempObject.gameObject);
-
-            snapTransform.position = initialPosition;
-            Vector3 pDiff = attachPoint.transform.position - m_attachPt.transform.position;
-            snapTransform.position += pDiff;
-
-            if (doSnap)
-            {
-                DestroyImmediate(interactable.GetComponent<Throwable>());
-                DestroyImmediate(interactable.GetComponent<VelocityEstimator>());
-                DestroyImmediate(interactable.GetComponent<Rigidbody>());
-
-                Rigidbody parentRigidbody = snapParent.GetComponentInParent<Rigidbody>();
-
-                var joints = snapTransform.GetComponentsInChildren<Joint>();
-                foreach (var joint in joints)
-                {
-                    joint.GetComponent<Rigidbody>().rotation = snapTransform.rotation;
-                    joint.connectedBody = parentRigidbody;
-                    joint.autoConfigureConnectedAnchor = false;
-                    joint.anchor = Vector3.zero;
-                    joint.connectedAnchor = parentRigidbody.transform.InverseTransformPoint(joint.transform.position);
-                    StartCoroutine(DoSetBreakForce(joint));
-                }
-
-                Destroy(interactable);
-
-                //Interactable item = t.GetComponentInParent<Interactable>();
-                //item.UpdateColliders(); //give the parent this item's colliders
-            }
-        }
-        */
-
-
-        private IEnumerator DoSetBreakForce(Joint joint)
-        {
-            yield return new WaitForSeconds(0.1f);
-
-            if (joint != null)
-            {
-                joint.breakForce = 2000000f;
-                //joint.breakTorque = 300000f;
-            }
+            // TODO: does this serve any purpose?
+            transform.position = oldPos;
+            transform.rotation = oldRot;
         }
 
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.cyan;
-            for (int pointIndex = 0; pointIndex < points.Length; pointIndex++)
-            {
-                Gizmos.DrawWireSphere(transform.TransformPoint(points[pointIndex].point), rad);
-            }
 
-            for (int pointIndex = 0; pointIndex < points.Length; pointIndex++)
+            foreach (SnapPoint snapPoint in points)
             {
-                Gizmos.DrawLine(transform.TransformPoint(points[pointIndex].point) + transform.TransformDirection(points[pointIndex].normal) * rad, transform.TransformPoint(points[pointIndex].point) + transform.TransformDirection(points[pointIndex].normal) * rad * 1.8f);
+                Gizmos.DrawWireSphere(transform.TransformPoint(snapPoint.point), radius);
+                
+                Gizmos.DrawLine(
+                    transform.TransformPoint(snapPoint.point) + transform.TransformDirection(snapPoint.normal) * radius,
+                    transform.TransformPoint(snapPoint.point) + transform.TransformDirection(snapPoint.normal) * radius * 1.8f
+                );
             }
         }
     }
@@ -528,6 +384,7 @@ namespace Assembler
     {
         public float dist;
         public AssemblerPoint point;
+        
         public PointHitCheck(float hitDistance, AssemblerPoint hitPoint)
         {
             dist = hitDistance;
