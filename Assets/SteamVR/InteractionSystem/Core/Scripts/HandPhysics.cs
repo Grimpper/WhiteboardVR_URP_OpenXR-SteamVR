@@ -1,4 +1,4 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
+//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 //
 // Purpose: handles the physics of hands colliding with the world
 //
@@ -49,7 +49,7 @@ namespace Valve.VR.InteractionSystem
         // distance at which hand will teleport back to controller
         const float handResetDistance = 0.6f;
 
-        const float collisionReenableClearanceRadius = 0.1f;
+        const float collisionReenableClearanceRadius = 0.15f;
 
         private bool initialized = false;
 
@@ -146,12 +146,17 @@ namespace Valve.VR.InteractionSystem
                 }  
             }
 
-            if (layerSetterContext != null && Vector3.Distance(hand.objectAttachmentPoint.position,
-                layerSetterContext.gameObject.transform.position) > 0.15f)
+            clearanceBuffer = new Collider[16];
+            
+            int numberOfCollisions = 
+                Physics.OverlapSphereNonAlloc(hand.objectAttachmentPoint.position, collisionReenableClearanceRadius, 
+                clearanceBuffer, ~gameObject.layer);
+
+            if (numberOfCollisions < 16)
             {
                 ConsumeLayerSetterContext();
             }
-
+            
             handCollider.SetCollisionDetectionEnabled(collisionsEnabled);
 
             if (hand.skeleton == null) return;

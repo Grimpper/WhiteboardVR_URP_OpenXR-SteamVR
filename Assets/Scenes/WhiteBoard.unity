@@ -3045,7 +3045,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8447738951636233338, guid: 3d584edaf7bac5f41b18843df4c402c7, type: 3}
       propertyPath: enablePhysicsWhileGrabbing
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8447739006472117340, guid: 3d584edaf7bac5f41b18843df4c402c7, type: 3}
       propertyPath: clearanceCheckMask.m_Bits
@@ -3053,7 +3053,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8447739006472117340, guid: 3d584edaf7bac5f41b18843df4c402c7, type: 3}
       propertyPath: enablePhysicsWhileGrabbing
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d584edaf7bac5f41b18843df4c402c7, type: 3}
