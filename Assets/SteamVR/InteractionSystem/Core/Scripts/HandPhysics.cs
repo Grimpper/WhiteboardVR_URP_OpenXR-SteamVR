@@ -23,6 +23,24 @@ namespace Valve.VR.InteractionSystem
         // Custom Code: Enable hand physics while grabbing //
         [Tooltip("Enable hand physics while grabbing")]
         [SerializeField] private bool enablePhysicsWhileGrabbing = false;
+
+        private LayerSetter.ScheduleLayerSetContext layerSetterContext;
+
+        public LayerSetter.ScheduleLayerSetContext LayerSetterContext
+        {
+            get => layerSetterContext;
+            set => layerSetterContext = value;
+        }
+
+        void ConsumeLayerSetterContext()
+        {
+            if (layerSetterContext == null) 
+                return;
+            
+            layerSetterContext.ExecuteLayerReset();
+            Debug.Log(layerSetterContext.gameObject + " " + layerSetterContext.layer);
+            layerSetterContext = null;
+        }
         // Custom Code: Enable hand physics while grabbing //
 
         [HideInInspector]
@@ -43,10 +61,10 @@ namespace Valve.VR.InteractionSystem
             hand = GetComponent<Hand>();
             //spawn hand collider and link it to us
             
-            // Custom code: set handColliderGameObject's tag
+            // Custom code: set handColliderGameObject's to hand layer
             GameObject handColliderObj = Instantiate(handColliderPrefab.gameObject);
-            handColliderObj.tag = "Hand";
-            // Custom code: set handColliderGameObject's tag
+            LayerSetter.SetLayerRecursively(handColliderObj, gameObject.layer);
+            // Custom code: set handColliderGameObject's to hand layer
             
             handCollider = handColliderObj.GetComponent<HandCollider>();
             
@@ -105,27 +123,36 @@ namespace Valve.VR.InteractionSystem
 
         private void UpdatePositions()
         {
-            // disable collisions when holding something
-            if (hand.currentAttachedObject != null)
+            if (!enablePhysicsWhileGrabbing)
             {
-                collisionsEnabled = false;
-            }
-            else
-            {
-                // wait for area to become clear before reenabling collisions
-                if (!collisionsEnabled)
+                // disable collisions when holding something
+                if (hand.currentAttachedObject != null)
                 {
-                    clearanceBuffer[0] = null;
-                    Physics.OverlapSphereNonAlloc(hand.objectAttachmentPoint.position, collisionReenableClearanceRadius, clearanceBuffer);
-                    // if we don't find anything in the vicinity, reenable collisions!
-                    if (clearanceBuffer[0] == null)
-                    {
-                        collisionsEnabled = true;
-                    }
+                    collisionsEnabled = false;
                 }
+                else
+                {
+                    // wait for area to become clear before reenabling collisions
+                    if (!collisionsEnabled)
+                    {
+                        clearanceBuffer[0] = null;
+                        Physics.OverlapSphereNonAlloc(hand.objectAttachmentPoint.position, collisionReenableClearanceRadius, clearanceBuffer);
+                        // if we don't find anything in the vicinity, reenable collisions!
+                        if (clearanceBuffer[0] == null)
+                        {
+                            collisionsEnabled = true;
+                        }
+                    }
+                }  
             }
 
-            handCollider.SetCollisionDetectionEnabled(enablePhysicsWhileGrabbing || collisionsEnabled);
+            if (layerSetterContext != null && Vector3.Distance(hand.objectAttachmentPoint.position,
+                layerSetterContext.gameObject.transform.position) > 0.15f)
+            {
+                ConsumeLayerSetterContext();
+            }
+
+            handCollider.SetCollisionDetectionEnabled(collisionsEnabled);
 
             if (hand.skeleton == null) return;
             initialized = true;

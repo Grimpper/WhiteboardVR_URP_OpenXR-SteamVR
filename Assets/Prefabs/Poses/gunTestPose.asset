@@ -17,11 +17,11 @@ MonoBehaviour:
     thumbFingerMovementType: 0
     indexFingerMovementType: 0
     middleFingerMovementType: 0
-    ringFingerMovementType: 2
-    pinkyFingerMovementType: 1
+    ringFingerMovementType: 0
+    pinkyFingerMovementType: 0
     ignoreRootPoseData: 1
     ignoreWristPoseData: 1
-    position: {x: 0.021920826, y: -0.039846677, z: -0.013047749}
+    position: {x: 0.021920776, y: -0.03984663, z: -0.01304784}
     rotation: {x: -0.32418218, y: 0.5965848, z: 0.039301023, w: -0.73310846}
     bonePositions:
     - {x: -0, y: 0, z: 0}
@@ -58,7 +58,7 @@ MonoBehaviour:
     boneRotations:
     - {x: -6.123234e-17, y: 1, z: 6.123234e-17, w: -0.00000004371139}
     - {x: -0.078608155, y: -0.92027926, z: 0.3792963, w: -0.055146642}
-    - {x: -0.0309803, y: -0.6892981, z: 0.5433626, w: 0.4781897}
+    - {x: -0.0309803, y: -0.68929815, z: 0.5433626, w: 0.47818974}
     - {x: 0.064429626, y: -0.05434832, z: -0.31132886, w: 0.9465567}
     - {x: 0.0023116162, y: -0.021980422, z: -0.02674221, w: 0.99939805}
     - {x: -1.3877788e-17, y: -1.3877788e-17, z: -5.551115e-17, w: 1}
@@ -79,7 +79,7 @@ MonoBehaviour:
     - {x: 6.938894e-18, y: -9.62965e-35, z: -1.3877788e-17, w: 1}
     - {x: -0.5433825, y: -0.3747979, z: -0.5739595, w: 0.48459518}
     - {x: -0.026485052, y: -0.027889524, z: -0.3067766, w: 0.95100415}
-    - {x: -0.052201245, y: 0.061468244, z: -0.3739809, w: 0.9239237}
+    - {x: -0.052201245, y: 0.061468247, z: -0.3739809, w: 0.92392373}
     - {x: -0.023453036, y: 0.0465425, z: -0.34664905, w: 0.9365459}
     - {x: 0, y: 0, z: 1.9081958e-17, w: 1}
     - {x: 0.20274544, y: 0.59426665, z: 0.2494411, w: 0.73723847}
@@ -92,8 +92,8 @@ MonoBehaviour:
     thumbFingerMovementType: 0
     indexFingerMovementType: 0
     middleFingerMovementType: 0
-    ringFingerMovementType: 2
-    pinkyFingerMovementType: 1
+    ringFingerMovementType: 0
+    pinkyFingerMovementType: 0
     ignoreRootPoseData: 1
     ignoreWristPoseData: 1
     position: {x: -0.0145342415, y: -0.014936253, z: -0.052436456}

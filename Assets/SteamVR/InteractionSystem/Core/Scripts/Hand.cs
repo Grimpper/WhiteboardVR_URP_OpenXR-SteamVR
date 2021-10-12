@@ -1,4 +1,4 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
+//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 //
 // Purpose: The hands used by the player in the vr interaction system
 //
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine.Events;
 using System.Threading;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Valve.VR.InteractionSystem
 {
@@ -118,12 +119,9 @@ namespace Valve.VR.InteractionSystem
             }
         }
 
-        private List<AttachedObject> attachedObjects = new List<AttachedObject>();
+        private readonly List<AttachedObject> attachedObjects = new List<AttachedObject>();
 
-        public ReadOnlyCollection<AttachedObject> AttachedObjects
-        {
-            get { return attachedObjects.AsReadOnly(); }
-        }
+        public ReadOnlyCollection<AttachedObject> AttachedObjects => attachedObjects.AsReadOnly();
 
         public bool hoverLocked { get; private set; }
 
@@ -141,32 +139,21 @@ namespace Valve.VR.InteractionSystem
 
         private SteamVR_Events.Action inputFocusAction;
 
-        public bool isActive
-        {
-            get
-            {
-                if (trackedObject != null)
-                    return trackedObject.isActive;
+        public bool isActive => trackedObject != null ? trackedObject.isActive : this.gameObject.activeInHierarchy;
 
-                return this.gameObject.activeInHierarchy;
-            }
-        }
+        public bool isPoseValid => trackedObject.isValid;
 
-        public bool isPoseValid
-        {
-            get
-            {
-                return trackedObject.isValid;
-            }
-        }
-
-
+        // Custom Code: Layer setter //
+        private HandPhysics handPhysics;
+        // Custom Code: Layer setter //
+        
+        
         //-------------------------------------------------
         // The Interactable object this Hand is currently hovering over
         //-------------------------------------------------
         public Interactable hoveringInteractable
         {
-            get { return _hoveringInteractable; }
+            get => _hoveringInteractable;
             set
             {
                 if (_hoveringInteractable != value)
@@ -362,12 +349,15 @@ namespace Valve.VR.InteractionSystem
         // flags - The flags to use for attaching the object
         // attachmentPoint - Name of the GameObject in the hierarchy of this Hand which should act as the attachment point for this GameObject
         //-------------------------------------------------
-        public void AttachObject(GameObject objectToAttach, GrabTypes grabbedWithType, AttachmentFlags flags = defaultAttachmentFlags, Transform attachmentOffset = null)
+        public void AttachObject(GameObject objectToAttach, GrabTypes grabbedWithType,
+            AttachmentFlags flags = defaultAttachmentFlags, Transform attachmentOffset = null)
         {
-            AttachedObject attachedObject = new AttachedObject();
-            attachedObject.attachmentFlags = flags;
-            attachedObject.attachedOffsetTransform = attachmentOffset;
-            attachedObject.attachTime = Time.time;
+            AttachedObject attachedObject = new AttachedObject
+            {
+                attachmentFlags = flags,
+                attachedOffsetTransform = attachmentOffset,
+                attachTime = Time.time
+            };
 
             if (flags == 0)
             {
@@ -474,7 +464,7 @@ namespace Valve.VR.InteractionSystem
                 //Parent the object to the hand
                 objectToAttach.transform.parent = this.transform;
                 // Custom code: Set object to attach layer to hand layer //
-                objectToAttach.layer = this.gameObject.layer;
+                LayerSetter.SetLayerRecursively(objectToAttach, gameObject.layer);
                 // Custom code: Set object to attach layer to hand layer //
                 
                 attachedObject.isParentedToHand = true;
@@ -653,7 +643,10 @@ namespace Valve.VR.InteractionSystem
                     {
                         attachedObjects[index].attachedObject.transform.parent = parentTransform;
                         // Custom code: Restore Layer
-                        LayerSetter.SetLayerRecursively(attachedObjects[index].attachedObject, parentLayer);
+                        //LayerSetter.SetLayerRecursively(attachedObjects[index].attachedObject, parentLayer);
+                        handPhysics.LayerSetterContext =
+                            new LayerSetter.ScheduleLayerSetContext(attachedObjects[index].attachedObject,
+                                parentLayer);
                         // Custom code: Restore Layer
                     }
                 }
@@ -1097,6 +1090,8 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void OnEnable()
         {
+            handPhysics = GetComponent<HandPhysics>();
+            
             inputFocusAction.enabled = true;
 
             // Stagger updates between hands

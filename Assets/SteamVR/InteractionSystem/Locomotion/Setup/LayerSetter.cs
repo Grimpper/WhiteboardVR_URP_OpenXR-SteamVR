@@ -64,7 +64,7 @@ public class LayerSetter : MonoBehaviour
 
     public static void SetLayerRecursively(GameObject obj, int desiredBaseLayer, int desiredHandLayer = -1)
     {
-        if (_altLayerTag != "" && obj.CompareTag(_altLayerTag) && (desiredHandLayer >= 0 && desiredHandLayer <= 31))
+        if (_altLayerTag != null && obj.CompareTag(_altLayerTag) && (desiredHandLayer >= 0 && desiredHandLayer <= 31))
         {
             obj.layer = desiredHandLayer;
             
@@ -84,5 +84,21 @@ public class LayerSetter : MonoBehaviour
             }
         }
     }
+    
+    public class ScheduleLayerSetContext
+    {
+        public GameObject gameObject;
+        public int layer;
 
+        public ScheduleLayerSetContext(GameObject gameObject, int layer)
+        {
+            this.gameObject = gameObject;
+            this.layer = layer;
+        }
+
+        public void ExecuteLayerReset()
+        {
+            SetLayerRecursively(gameObject, layer);
+        }
+    }
 }

@@ -24,6 +24,8 @@ public class BlackOut : MonoBehaviour
     private float distance;
     private Vector3 direction;
 
+    [SerializeField] private bool debug = false;
+
     private void Start()
     {
         RenderSettings.fogMode = FogMode.Exponential;
@@ -52,17 +54,21 @@ public class BlackOut : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Head collided");
         colliderB = other;
         ToggleBlackOut(true);
         insideCollision = true;
+        
+        if (debug)
+            Debug.Log("Head collided");
     }
 
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log("Head decollided"); 
         ToggleBlackOut(false);
         insideCollision = false;
+        
+        if (debug)
+            Debug.Log("Head decollided"); 
     }
 
     private void ToggleBlackOut(bool state)
