@@ -38,9 +38,14 @@ namespace Valve.VR.InteractionSystem
                 return;
             
             layerSetterContext.ExecuteLayerReset();
-            Debug.Log(layerSetterContext.gameObject + " " + layerSetterContext.layer);
+            
+            if (debug) 
+                Debug.Log("Restoring " + layerSetterContext.gameObject + " to layer " + layerSetterContext.layer);
+            
             layerSetterContext = null;
         }
+
+        public bool debug = false;
         // Custom Code: Enable hand physics while grabbing //
 
         [HideInInspector]
@@ -152,6 +157,12 @@ namespace Valve.VR.InteractionSystem
                 Physics.OverlapSphereNonAlloc(hand.objectAttachmentPoint.position, collisionReenableClearanceRadius, 
                 clearanceBuffer, ~gameObject.layer);
 
+            if (debug && layerSetterContext != null)
+            {
+                string msg = "collisions from " + layerSetterContext.gameObject.name + ": " + (numberOfCollisions - 15);
+                Debug.Log("<b>[SteamVR Interaction]</b> Hand (" + this.name + "), " + msg);
+            }
+            
             if (numberOfCollisions < 16)
             {
                 ConsumeLayerSetterContext();
