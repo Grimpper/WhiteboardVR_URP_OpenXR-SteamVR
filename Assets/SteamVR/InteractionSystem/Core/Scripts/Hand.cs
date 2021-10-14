@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using UnityEngine.Events;
 using System.Threading;
 using ICSharpCode.NRefactory.Ast;
@@ -243,6 +244,28 @@ namespace Valve.VR.InteractionSystem
                 return null;
             }
         }
+        
+        // Custom code: Layer Restore
+        private int GetOriginalLayer(GameObject objectToAttach)
+        {
+            int objectAttachedToOtherHandIndex = otherHand.attachedObjects
+                .FindIndex(obj => obj.attachedObject == objectToAttach);
+
+            foreach (AttachedObject o in otherHand.attachedObjects)
+            {
+                Debug.Log("obj: " + o.attachedObject.name);
+            }
+            
+            if (objectAttachedToOtherHandIndex == -1)
+                Debug.Log("Not found: " + objectAttachedToOtherHandIndex);
+            else
+                Debug.Log("Original layer: " + otherHand.attachedObjects[objectAttachedToOtherHandIndex].originalLayer);
+
+            return objectAttachedToOtherHandIndex == -1
+                ? objectToAttach.layer
+                : otherHand.attachedObjects[objectAttachedToOtherHandIndex].originalLayer;
+        }
+        // Custom code: Layer Restore
 
         public void ShowController(bool permanent = false)
         {
@@ -370,6 +393,10 @@ namespace Valve.VR.InteractionSystem
             //Detach the object if it is already attached so that it can get re-attached at the top of the stack
             if (ObjectIsAttached(objectToAttach))
                 DetachObject(objectToAttach);
+            
+            // Custom code: Restore Layer
+            attachedObject.originalLayer = GetOriginalLayer(objectToAttach);
+            //Custom code: Restore Layer
 
             //Detach from the other hand if requested
             if (attachedObject.HasAttachFlag(AttachmentFlags.DetachFromOtherHand))
@@ -427,10 +454,6 @@ namespace Valve.VR.InteractionSystem
             }
 
             attachedObject.originalParent = objectToAttach.transform.parent != null ? objectToAttach.transform.parent.gameObject : null;
-            
-            // Custom code: Layer Setter
-            attachedObject.originalLayer = objectToAttach.layer;
-            // Custom code: Restore Setter
 
             attachedObject.attachedRigidbody = objectToAttach.GetComponent<Rigidbody>();
             if (attachedObject.attachedRigidbody != null)
@@ -643,10 +666,19 @@ namespace Valve.VR.InteractionSystem
                     {
                         attachedObjects[index].attachedObject.transform.parent = parentTransform;
                         // Custom code: Restore Layer
-                        //LayerSetter.SetLayerRecursively(attachedObjects[index].attachedObject, parentLayer);
-                        handPhysics.LayerSetterContext =
-                            new LayerSetter.ScheduleLayerSetContext(attachedObjects[index].attachedObject,
-                                parentLayer);
+                        bool isObjectAttachedToOtherHand = otherHand.attachedObjects
+                            .Any(obj => obj.attachedObject == objectToDetach);
+                        
+                        if (!isObjectAttachedToOtherHand)
+                        {
+                            // TODO: fix layer getting restored even when attached to other hand. The problem is that
+                            // the context is created on attach but is not destroyed on attach of the other hand so 
+                            // even if it's not created in this line there will be still a context when the first attached
+                            // hand gets far enough, resetting the layer even if the other hand is still holding it.
+                            handPhysics.LayerSetterContext =
+                                new LayerSetter.LayerSetContext(attachedObjects[index].attachedObject,
+                                    parentLayer);
+                        }
                         // Custom code: Restore Layer
                     }
                 }

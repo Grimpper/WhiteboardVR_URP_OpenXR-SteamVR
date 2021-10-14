@@ -24,9 +24,9 @@ namespace Valve.VR.InteractionSystem
         [Tooltip("Enable hand physics while grabbing")]
         [SerializeField] private bool enablePhysicsWhileGrabbing = false;
 
-        private LayerSetter.ScheduleLayerSetContext layerSetterContext;
+        private LayerSetter.LayerSetContext layerSetterContext;
 
-        public LayerSetter.ScheduleLayerSetContext LayerSetterContext
+        public LayerSetter.LayerSetContext LayerSetterContext
         {
             get => layerSetterContext;
             set => layerSetterContext = value;

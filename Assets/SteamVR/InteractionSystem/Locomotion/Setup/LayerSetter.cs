@@ -85,12 +85,12 @@ public class LayerSetter : MonoBehaviour
         }
     }
     
-    public class ScheduleLayerSetContext
+    public class LayerSetContext
     {
         public GameObject gameObject;
         public int layer;
 
-        public ScheduleLayerSetContext(GameObject gameObject, int layer)
+        public LayerSetContext(GameObject gameObject, int layer)
         {
             this.gameObject = gameObject;
             this.layer = layer;
