@@ -26,14 +26,19 @@ namespace Valve.VR.InteractionSystem
         [Flags]
         public enum AttachmentFlags
         {
-            SnapOnAttach = 1 << 0, // The object should snap to the position of the specified attachment point on the hand.
+            SnapOnAttach =
+                1 << 0, // The object should snap to the position of the specified attachment point on the hand.
             DetachOthers = 1 << 1, // Other objects attached to this hand will be detached.
             DetachFromOtherHand = 1 << 2, // This object will be detached from the other hand.
             ParentToHand = 1 << 3, // The object will be parented to the hand.
-            VelocityMovement = 1 << 4, // The object will attempt to move to match the position and rotation of the hand.
+
+            VelocityMovement =
+                1 << 4, // The object will attempt to move to match the position and rotation of the hand.
             TurnOnKinematic = 1 << 5, // The object will not respond to external physics.
             TurnOffGravity = 1 << 6, // The object will not respond to external physics.
-            AllowSidegrade = 1 << 7, // The object is able to switch from a pinch grab to a grip grab. Decreases likelyhood of a good throw but also decreases likelyhood of accidental drop
+
+            AllowSidegrade =
+                1 << 7, // The object is able to switch from a pinch grab to a grip grab. Decreases likelyhood of a good throw but also decreases likelyhood of accidental drop
         };
 
         public const AttachmentFlags defaultAttachmentFlags = AttachmentFlags.ParentToHand |
@@ -78,12 +83,9 @@ namespace Valve.VR.InteractionSystem
         private float noSteamVRFallbackInteractorDistance = -1.0f;
 
         public GameObject renderModelPrefab;
-        [HideInInspector]
-        public List<RenderModel> renderModels = new List<RenderModel>();
-        [HideInInspector]
-        public RenderModel mainRenderModel;
-        [HideInInspector]
-        public RenderModel hoverhighlightRenderModel;
+        [HideInInspector] public List<RenderModel> renderModels = new List<RenderModel>();
+        [HideInInspector] public RenderModel mainRenderModel;
+        [HideInInspector] public RenderModel hoverhighlightRenderModel;
 
         public bool showDebugText = false;
         public bool spewDebugText = false;
@@ -109,7 +111,7 @@ namespace Valve.VR.InteractionSystem
             public Quaternion easeSourceRotation;
             public float attachTime;
             public AllowTeleportWhileAttachedToHand allowTeleportWhileAttachedToHand;
-            
+
             // Custom Code: Layer setter //
             public int originalLayer;
             // Custom Code: Layer setter //
@@ -147,8 +149,8 @@ namespace Valve.VR.InteractionSystem
         // Custom Code: Layer setter //
         private HandPhysics handPhysics;
         // Custom Code: Layer setter //
-        
-        
+
+
         //-------------------------------------------------
         // The Interactable object this Hand is currently hovering over
         //-------------------------------------------------
@@ -163,12 +165,15 @@ namespace Valve.VR.InteractionSystem
                     {
                         if (spewDebugText)
                             HandDebugLog("HoverEnd " + _hoveringInteractable.gameObject);
-                        _hoveringInteractable.SendMessage("OnHandHoverEnd", this, SendMessageOptions.DontRequireReceiver);
+                        _hoveringInteractable.SendMessage("OnHandHoverEnd", this,
+                            SendMessageOptions.DontRequireReceiver);
 
                         //Note: The _hoveringInteractable can change after sending the OnHandHoverEnd message so we need to check it again before broadcasting this message
                         if (_hoveringInteractable != null)
                         {
-                            this.BroadcastMessage("OnParentHandHoverEnd", _hoveringInteractable, SendMessageOptions.DontRequireReceiver); // let objects attached to the hand know that a hover has ended
+                            this.BroadcastMessage("OnParentHandHoverEnd", _hoveringInteractable,
+                                SendMessageOptions
+                                    .DontRequireReceiver); // let objects attached to the hand know that a hover has ended
                         }
                     }
 
@@ -178,12 +183,15 @@ namespace Valve.VR.InteractionSystem
                     {
                         if (spewDebugText)
                             HandDebugLog("HoverBegin " + _hoveringInteractable.gameObject);
-                        _hoveringInteractable.SendMessage("OnHandHoverBegin", this, SendMessageOptions.DontRequireReceiver);
+                        _hoveringInteractable.SendMessage("OnHandHoverBegin", this,
+                            SendMessageOptions.DontRequireReceiver);
 
                         //Note: The _hoveringInteractable can change after sending the OnHandHoverBegin message so we need to check it again before broadcasting this message
                         if (_hoveringInteractable != null)
                         {
-                            this.BroadcastMessage("OnParentHandHoverBegin", _hoveringInteractable, SendMessageOptions.DontRequireReceiver); // let objects attached to the hand know that a hover has begun
+                            this.BroadcastMessage("OnParentHandHoverBegin", _hoveringInteractable,
+                                SendMessageOptions
+                                    .DontRequireReceiver); // let objects attached to the hand know that a hover has begun
                         }
                     }
                 }
@@ -244,26 +252,34 @@ namespace Valve.VR.InteractionSystem
                 return null;
             }
         }
-        
+
         // Custom code: Layer Restore
         private int GetOriginalLayer(GameObject objectToAttach)
         {
             int objectAttachedToOtherHandIndex = otherHand.attachedObjects
                 .FindIndex(obj => obj.attachedObject == objectToAttach);
 
-            foreach (AttachedObject o in otherHand.attachedObjects)
-            {
-                Debug.Log("obj: " + o.attachedObject.name);
-            }
-            
-            if (objectAttachedToOtherHandIndex == -1)
-                Debug.Log("Not found: " + objectAttachedToOtherHandIndex);
-            else
-                Debug.Log("Original layer: " + otherHand.attachedObjects[objectAttachedToOtherHandIndex].originalLayer);
-
             return objectAttachedToOtherHandIndex == -1
                 ? objectToAttach.layer
                 : otherHand.attachedObjects[objectAttachedToOtherHandIndex].originalLayer;
+        }
+
+        private void UpdateHandContext(GameObject objectToAttach, AttachedObject attachedObject)
+        {
+            bool isObjectAttachedToOtherHand = otherHand.attachedObjects
+                .Any(obj => obj.attachedObject == objectToAttach);
+
+            if (isObjectAttachedToOtherHand)
+            {
+                handPhysics.LayerSetterContext = otherHand.handPhysics.LayerSetterContext;
+                otherHand.handPhysics.LayerSetterContext = null;
+            }
+            else
+            {
+                handPhysics.LayerSetterContext =
+                    new LayerSetter.LayerSetContext(objectToAttach,
+                        attachedObject.originalLayer);  
+            }
         }
         // Custom code: Layer Restore
 
@@ -389,14 +405,15 @@ namespace Valve.VR.InteractionSystem
 
             //Make sure top object on stack is non-null
             CleanUpAttachedObjectStack();
+            
+            // Custom code: Restore Layer
+            attachedObject.originalLayer = GetOriginalLayer(objectToAttach);
+            UpdateHandContext(objectToAttach, attachedObject);
+            //Custom code: Restore Layer
 
             //Detach the object if it is already attached so that it can get re-attached at the top of the stack
             if (ObjectIsAttached(objectToAttach))
                 DetachObject(objectToAttach);
-            
-            // Custom code: Restore Layer
-            attachedObject.originalLayer = GetOriginalLayer(objectToAttach);
-            //Custom code: Restore Layer
 
             //Detach from the other hand if requested
             if (attachedObject.HasAttachFlag(AttachmentFlags.DetachFromOtherHand))
@@ -651,35 +668,16 @@ namespace Valve.VR.InteractionSystem
                 }
 
                 Transform parentTransform = null;
-                // Custom code: Layer to restore
-                int parentLayer = 0;
                 if (attachedObjects[index].isParentedToHand)
                 {
                     if (restoreOriginalParent && (attachedObjects[index].originalParent != null))
                     {
                         parentTransform = attachedObjects[index].originalParent.transform;
-                        // Custom code: Restore Layer
-                        parentLayer = attachedObjects[index].originalLayer;
                     }
 
                     if (attachedObjects[index].attachedObject != null)
                     {
                         attachedObjects[index].attachedObject.transform.parent = parentTransform;
-                        // Custom code: Restore Layer
-                        bool isObjectAttachedToOtherHand = otherHand.attachedObjects
-                            .Any(obj => obj.attachedObject == objectToDetach);
-                        
-                        if (!isObjectAttachedToOtherHand)
-                        {
-                            // TODO: fix layer getting restored even when attached to other hand. The problem is that
-                            // the context is created on attach but is not destroyed on attach of the other hand so 
-                            // even if it's not created in this line there will be still a context when the first attached
-                            // hand gets far enough, resetting the layer even if the other hand is still holding it.
-                            handPhysics.LayerSetterContext =
-                                new LayerSetter.LayerSetContext(attachedObjects[index].attachedObject,
-                                    parentLayer);
-                        }
-                        // Custom code: Restore Layer
                     }
                 }
 
