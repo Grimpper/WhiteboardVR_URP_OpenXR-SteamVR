@@ -7,7 +7,7 @@ using UnityEngine;
 public class SpiceParser : MonoBehaviour
 {
     private static string PathToRead;
-    private static string PathToWrite = "F:\\Unity_Projects\\ngspice_test\\Spice64\\circuits\\write_test.cir";
+    private static string PathToWrite = SpiceManager.SpicePath + "\\circuits\\write_test.cir";
     private static string title = String.Empty;
     private static string date = String.Empty;
     private static string plotName = String.Empty;
@@ -37,7 +37,7 @@ public class SpiceParser : MonoBehaviour
             Regex regex = new Regex(@"write (.*)");
             Match match = regex.Match(line);
 
-            return match.Groups[1].Value;
+            return SpiceManager.SpicePath + match.Groups[1].Value;
         }
 
         return null;
