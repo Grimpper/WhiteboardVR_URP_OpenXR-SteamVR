@@ -87,6 +87,7 @@ public class BoardComputeRenderer : MonoBehaviour
     public Color Color
     {
         set => color = value;
+        get => color;
     }
     
     private Vector2 lastPixelUV;

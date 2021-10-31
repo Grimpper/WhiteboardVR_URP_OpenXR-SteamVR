@@ -1295,7 +1295,7 @@ GameObject:
   - component: {fileID: 1106697572}
   - component: {fileID: 1106697571}
   - component: {fileID: 1106697576}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BoardB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1583,7 +1583,7 @@ GameObject:
   - component: {fileID: 1305155185}
   - component: {fileID: 1305155184}
   - component: {fileID: 1305155183}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ComputeBoard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1608,7 +1608,7 @@ MonoBehaviour:
     needsReinit: 0
   contactOffset: 0.001
   sampleRate: 0.01
-  showDebug: 1
+  showDebug: 0
 --- !u!114 &1305155184
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1721,8 +1721,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.0000002, y: 1, z: 0.04}
-  m_Center: {x: 0, y: 0, z: -0.02}
+  m_Size: {x: 1.0000002, y: 1, z: 0.06688705}
+  m_Center: {x: -1.7849155e-17, y: 0, z: -0.0065564755}
 --- !u!1 &1326188739
 GameObject:
   m_ObjectHideFlags: 0
@@ -2600,7 +2600,7 @@ GameObject:
   - component: {fileID: 3311483622569324271}
   m_Layer: 0
   m_Name: YoPen
-  m_TagString: Marker
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
