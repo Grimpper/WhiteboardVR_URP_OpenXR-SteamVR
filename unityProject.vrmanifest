@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.whiteboard_urpopenxrsteamvr.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Users\\juegos\\Documents\\Unity Projects\\WhiteboardVR_URP_OpenXR-SteamVR\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "E:\\Unity_Projects\\WhiteboardVR_URP_OpenXR-SteamVR\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "Whiteboard_URP+OpenXR+SteamVR [Testing]"
