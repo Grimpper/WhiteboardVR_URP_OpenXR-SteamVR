@@ -1295,7 +1295,7 @@ GameObject:
   - component: {fileID: 1106697572}
   - component: {fileID: 1106697571}
   - component: {fileID: 1106697576}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: BoardB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1583,7 +1583,7 @@ GameObject:
   - component: {fileID: 1305155185}
   - component: {fileID: 1305155184}
   - component: {fileID: 1305155183}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: ComputeBoard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1608,7 +1608,7 @@ MonoBehaviour:
     needsReinit: 0
   contactOffset: 0.001
   sampleRate: 0.01
-  showDebug: 0
+  showDebug: 1
 --- !u!114 &1305155184
 MonoBehaviour:
   m_ObjectHideFlags: 0
