@@ -272,13 +272,15 @@ namespace Valve.VR.InteractionSystem
             if (isObjectAttachedToOtherHand)
             {
                 handPhysics.LayerSetterContext = otherHand.handPhysics.LayerSetterContext;
+                handPhysics.LayerSetterContext.holdingHand = this;
+
                 otherHand.handPhysics.LayerSetterContext = null;
             }
             else
             {
                 handPhysics.LayerSetterContext =
                     new LayerSetter.LayerSetContext(objectToAttach,
-                        attachedObject.originalLayer);  
+                        attachedObject.originalLayer, this);  
             }
         }
         // Custom code: Layer Restore

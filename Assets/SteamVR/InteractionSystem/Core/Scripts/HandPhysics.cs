@@ -32,9 +32,9 @@ namespace Valve.VR.InteractionSystem
             set => layerSetterContext = value;
         }
 
-        void ConsumeLayerSetterContext()
+        private void ConsumeLayerSetterContext()
         {
-            if (layerSetterContext == null) 
+            if (layerSetterContext == null || layerSetterContext.holdingHand != hand) 
                 return;
             
             layerSetterContext.ExecuteLayerReset();
@@ -126,6 +126,26 @@ namespace Valve.VR.InteractionSystem
 
         Collider[] clearanceBuffer = new Collider[1];
 
+        private void ManageAttachedObjLayerRestore()
+        {
+            clearanceBuffer = new Collider[16];
+            
+            int numberOfCollisions = 
+                Physics.OverlapSphereNonAlloc(hand.objectAttachmentPoint.position, collisionReenableClearanceRadius, 
+                    clearanceBuffer, ~gameObject.layer);
+
+            if (debug && layerSetterContext != null)
+            {
+                string msg = "collisions from " + layerSetterContext.gameObject.name + ": " + (numberOfCollisions - 15);
+                Debug.Log("<b>[SteamVR Interaction]</b> Hand (" + this.name + "), " + msg);
+            }
+            
+            if (numberOfCollisions < 16)
+            {
+                ConsumeLayerSetterContext();
+            }
+        }
+        
         private void UpdatePositions()
         {
             if (!enablePhysicsWhileGrabbing)
@@ -151,22 +171,7 @@ namespace Valve.VR.InteractionSystem
                 }  
             }
 
-            clearanceBuffer = new Collider[16];
-            
-            int numberOfCollisions = 
-                Physics.OverlapSphereNonAlloc(hand.objectAttachmentPoint.position, collisionReenableClearanceRadius, 
-                clearanceBuffer, ~gameObject.layer);
-
-            if (debug && layerSetterContext != null)
-            {
-                string msg = "collisions from " + layerSetterContext.gameObject.name + ": " + (numberOfCollisions - 15);
-                Debug.Log("<b>[SteamVR Interaction]</b> Hand (" + this.name + "), " + msg);
-            }
-            
-            if (numberOfCollisions < 16)
-            {
-                ConsumeLayerSetterContext();
-            }
+            ManageAttachedObjLayerRestore();
             
             handCollider.SetCollisionDetectionEnabled(collisionsEnabled);
 

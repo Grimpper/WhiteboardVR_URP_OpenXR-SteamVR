@@ -90,10 +90,13 @@ public class LayerSetter : MonoBehaviour
         public GameObject gameObject;
         public int layer;
 
-        public LayerSetContext(GameObject gameObject, int layer)
+        public Hand holdingHand;
+
+        public LayerSetContext(GameObject gameObject, int layer, Hand holdingHand)
         {
             this.gameObject = gameObject;
             this.layer = layer;
+            this.holdingHand = holdingHand;
         }
 
         public void ExecuteLayerReset()
